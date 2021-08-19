@@ -20,7 +20,7 @@
 
 安装mirai-console这一步，大概会难倒一片人qwq
 
-[graia文档](https://graia-document.vercel.app/docs/guides/installation), [mirai官网](https://mirai.mamoe.net/)
+[graia文档](https://graia-document.vercel.app/docs/guides/installation), [mirai论坛](https://mirai.mamoe.net/)
 
 # 其他
 依然在不断编辑中，但是时间实在太少了，由于对具体规则的不了解，开发迟迟难以推进。
