@@ -15,17 +15,30 @@
 
 最重要功能：跑团。由于现有机器人通常不实现数据存储，需要DM手动记录，计算也较为麻烦，于是开发了本地存储功能【不可以偷偷改数据！我是一个有职业修养的统计人！】。
 
-# 安装
-需要事先配置好本地的mirai-console，设置账号与authkey，在bot2.py中进行功能取舍，之后会开发功能管理配置文件【大概
+# 安装简略步骤
+需要事先配置好mirai-console，设置账号与authkey。
+
+配置mirai完成后，在powershell里运行mcl，并且在终端中运行bot2.py，即可。在bot2.py中进行功能取舍，之后会开发功能管理配置文件【大概
+
+>版本  
+>mcl==2.6.7【稳定，更新后问题已修复】  
+>graia-application-mirai==0.19.0  
+>graia-broadcast==0.8.11  
+>graia-saya==0.0.9
+>graia-scheduler==0.0.4  
+>DnD4PY==1.0.5  
+>其他库版本影响不大
 
 安装mirai-console这一步，大概会难倒一片人qwq
 
-[graia文档](https://graia-document.vercel.app/docs/guides/installation), [mirai论坛](https://mirai.mamoe.net/)
+[graia文档](https://graia-document.vercel.app/docs/guides/installation), [mirai论坛](https://mirai.mamoe.net/)，[DnD4py一些小操作](https://github.com/bacook17/DnD4py/)
 
-如果只是想看看，可以加个好友※
+如果只是想看看，可以加个好友※，591016144。
 
 # 其他
 依然在不断编辑中，但是时间实在太少了，由于对具体规则的不了解，开发迟迟难以推进。
+
+数据库(database.xlsx)亟需丰富，部分代码冗余比较高……边写边学吧。
 
 欢迎有跑团经验的朋友带我玩/测试！可以做不同内容的适配。
 
