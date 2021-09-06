@@ -70,7 +70,7 @@ def roll_born(key,k=1):
     elif key == 'skillful':
         listk = random.sample(list(df['熟练']),k)
     elif key == 'birthplace':
-        listk = random.sample(list(df['出生地']),k) .join(random.sample(list(df['细节']),k)) 
+        listk = random.sample(list(df['出生地']),k) # .join(random.sample(list(df['细节']),k)) 
     # print(listk)
     return listk
 

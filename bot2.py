@@ -1,4 +1,12 @@
-# import graia.application.group as Group
+#! /usr/bin/env python3
+# coding:utf-8
+
+###### Kal'tsit Main Program ######
+### arknights homework bot V2.1 ###
+###      Author: KOneLane       ###
+###    Engine&Support: Mirai    ###
+###   Latest Update: 21.09.06   ###
+
 
 from graia.broadcast import Broadcast
 from graia.application import GraiaMiraiApplication, Session
@@ -10,23 +18,20 @@ from graia.application.friend import Friend
 import os
 import sys
 import random
-# import graia.application.message.elements.internal as Elements
 from graia.application.event.messages import Group,Member
 
-# from squads_init import operator
-from prts import prts
-import squads_init as si
-from time import sleep
+# from function.prts import Prts
+import function.squads_init as si
+# from time import sleep
+# import story_xu as sx
+from function.DarkTemple import Monster3
+from function.DarkTemple import SweepSquad
+
+# 系统功能库
+from AuthSet import AuthSet
+from MessageProcesser import MessageProcesser
 
 # 回滚版本请在powershell中输入.\mcl --update-package net.mamoe:mirai-console --channel stable --version 2.6.7
-
-# from graia.saya import Saya, Channel
-# from graia.saya.builtins.broadcast.schema import ListenerSchema
-# from graia.application.exceptions import AccountMuted
-# from graia.application.event.messages import GroupMessage
-# from graia.application.message.parser.kanata import Kanata
-# from graia.application.message.parser.signature import RegexMatch
-
 
 loop = asyncio.get_event_loop()
 
@@ -35,11 +40,21 @@ app = GraiaMiraiApplication(
     broadcast=bcc,
     connect_info=Session(
         host="http://localhost:8080", # 填入 httpapi 服务运行的地址
-        authKey="INITKEYyicPQIDq", # 填入 authKey
+        authKey="KOneLaneKaltsit", # 填入 authKey
         account=591016144, # 你的机器人的 qq 号
         websocket=True # Graia 已经可以根据所配置的消息接收的方式来保证消息接收部分的正常运作.
     )
 )
+
+# 测试未通过。。。
+# #### 加好友请求
+# @bcc.receiver("NewFriendRequestEvent")
+# async def newfriendacc(event):
+#     await event.accept('不定期进行中断测试/中断修复，只能在群聊中使用。可联系作者2238701273')
+# #### 加群请求
+# @bcc.receiver('BotInvitedJoinGroupRequestEvent')
+# async def newgroup(event):
+#     await event.accept('博士，我出现在这里，说明情况并不乐观。\n\n(输入#help 查看可用指令)')
 
 
 # @bcc.receiver("FriendMessage")
@@ -64,7 +79,12 @@ text_table = [
     '我们无法忘怀过去，但你会有不一样的未来。',
     '可以。',
     '走了。',
-    '沉默是最大的傲慢。'
+    '沉默是最大的傲慢。',
+    '完美是完美者的通行证，谜语是谜语者的墓志铭。',
+    '博士，其实我……唔，当我没说。',
+    '博士，我们收到的剿灭委托完成了吗？',
+    '工作使我们充实，能赋予这缺乏意义的人生一段高光。',
+    '博士，凌晨两点有你的考勤记录。罗德岛不推荐这样的加班。'
 ]
 
 
@@ -76,9 +96,111 @@ async def arknights_hw_rollbox(
     group: Group,
     member: Member
 ):
+    slightly_inittext = MessageProcesser(message,member)
+    init_text = slightly_inittext.text_processer()
+    # print(init_text)
+    msgout = init_text
+    """
+    msg_out是个字典:
+    'id':          QQ号 self.id,
+    'text_split':  根据空格分词结果 message.get(Plain)[0].text.split(' '),
+    'text_jieba':  分词结果
+    """
+    text = msgout['text_split']
 
-    text = message.get(Plain)[0].text.split(' ')
-    id = member.id
+    #### 关键词检测功能
+    m3 = Monster3(msgout)
+    m3_text = m3.check_words()
+    if m3_text:
+        await app.sendGroupMessage(group, MessageChain.create([
+            Plain(m3_text)
+        ]))
+
+    
+    sweepSquad = SweepSquad(msgout)
+    #### prts
+    prts_text = sweepSquad.prts()
+    if prts_text:
+        text_kal = random.sample(text_table,1)[0] + '\n'
+        await app.sendGroupMessage(group, MessageChain.create([
+            Plain(text_kal +'\n'+ prts_text)
+        ]))
+
+    #### 复读
+    repeat_text = sweepSquad.repeat()
+    if repeat_text:
+        text_kal = random.sample(text_table,1)[0] + '\n'
+        await app.sendGroupMessage(group, MessageChain.create([
+            Plain(repeat_text)
+        ]))
+    #### 夸夸
+    praise_text = sweepSquad.praise_()
+    if praise_text:
+        text_kal = random.sample(text_table,1)[0] + '\n'
+        await app.sendGroupMessage(group, MessageChain.create([
+            At(msgout['id']),Plain(praise_text)
+        ]))
+
+    # #### 天气+地图
+    map_weather_text = sweepSquad.map_weather()
+    if map_weather_text:
+        text_kal = random.sample(text_table,1)[0] + '\n'
+
+        if map_weather_text =='map':
+            await app.sendGroupMessage(group, MessageChain.create([
+                Plain(text_kal +'这是这次行动附近的路线图')+Image.fromLocalFile("./database/image.png")
+            ]))
+        elif map_weather_text == '地点不存在':
+            await app.sendGroupMessage(group, MessageChain.create([
+                Plain(text_kal + '博士，这个地方没有人听说过，我想你应该不会想着进入二次元吧。')
+            ]))
+        else:
+            await app.sendGroupMessage(group, MessageChain.create([
+                Plain(text_kal + '查询的天气大致如此: \n' + map_weather_text)
+            ]))
+
+
+    #### 跑团
+    dnd_text = sweepSquad.dnd_kaltsit()
+    if dnd_text:
+        await app.sendGroupMessage(group, MessageChain.create([
+            Plain(dnd_text)
+        ]))
+
+
+    id = str(member.id)
+    #### 权限模块
+    if (text[0] == "#auth"):
+        temp_auth = AuthSet({'id':id})
+        if len(text)==2:
+            use_qqid = id
+        else:
+            use_qqid = text[2]
+
+        if text[1] == '查询':
+            que_ans = temp_auth.queryAuth(use_qqid)
+            await app.sendGroupMessage(group, MessageChain.create([
+                At(member.id),Plain('这是你要的结果……\n'+'\n'.join(str(x) for x in que_ans[0]))
+            ]))
+        if text[1] == '初始化':
+            # 此时text[3]是修改后新的等级
+            if len(text)==3:
+                temp_auth.initAuth(wxid_for_change=use_qqid)
+            else:
+                temp_auth.initAuth(wxid_for_change=use_qqid,auth_level_new = int(text[3]))
+            que_ans = temp_auth.queryAuth(wxid_for_query = text[2])
+            await app.sendGroupMessage(group, MessageChain.create([
+                At(member.id),Plain('初始化后为：\n'+'\n'.join(str(x) for x in que_ans))
+            ]))
+        if text[1] == '修改':
+            # 此时text[3]是修改后新的等级
+            temp_auth.changeAuth(wxid_for_change=use_qqid,auth_level_new = int(text[3]))
+            que_ans = temp_auth.queryAuth(wxid_for_query = text[2])
+            await app.sendGroupMessage(group, MessageChain.create([
+                At(member.id),Plain('修改后的信息为：\n'+'\n'.join(str(x) for x in que_ans[0]))
+            ]))
+
+
     # 暂时删除群作业系统
     if message.asDisplay().startswith("#hw"):
         f = os.popen('python ./botqq/operator_rollbox_bot.py','r')
@@ -98,191 +220,7 @@ async def arknights_hw_rollbox(
             Plain(d)
         ]))
 
-    # 暂时删除夸夸系统
-    if message.asDisplay().startswith("#praise"):
-        f = os.popen('python ./botqq/praise.py','r')
-        d = f.read() 
-        # print(message.get('source'))
-        await app.sendGroupMessage(group, MessageChain.create([
-            At(member.id),Plain(d)
-        ]))
 
-    # 暂时删除复读系统
-    if message.asDisplay().startswith("？"):
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain("？")
-        ]))
-
-    if message.asDisplay().startswith("好耶"):
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain("好耶")
-        ]))
-
-
-    #### 跑团 ####
-    if (text[0] == "#读取"):
-        filename =  'C:/Users/ASUS/botqq/' + text[1] + '_opt.txt'
-        with open(filename, "r") as f:
-            d = f.read()
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain(d)
-        ]))
-
-    if (text[0] == "#初始化"):
-        """ #初始化 hehe 1 2 3 4"""
-        if len(text)!=6:
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain('初始化缺失输入')
-            ]))
-        else:
-            create_opt = si.operator(text[1],text[2],text[3],text[4],text[5])
-            create_opt.init_opt()
-            # sleep(10)
-            filename =  'C:/Users/ASUS/botqq/' + text[1] + '_opt.txt'
-            with open(filename, "r") as f:
-                d = f.read()
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(d)
-            ]))
-
-    if (text[0] == "#检定"):
-        # 检定 hehe agile 【skillful_ = 0，object_dict = None
-        create_opt = si.operator(text[1],0,0,0,0)
-        
-        if len(text) == 4:
-            _point,_against = create_opt.against_action(text[2], skillful_ = text[3])
-        elif len(text) == 3:
-            _point,_against = create_opt.against_action(text[2])
-        elif len(text)==5:
-            against_opt = si.operator(text[4],0,0,0,0)
-            _point,_against = create_opt.against_action(text[2], skillful_ = text[3], object_dict = against_opt.read_opt())
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain('主体检定值为：'+str(_point)+'\n客体豁免值为：'+str(_against))
-        ]))
-
-    if (text[0] == "#背包"):
-        # 目前仅支持热水壶XD
-        # 后续需绑定id
-        create_opt = si.operator(text[1],0,0,0,0)
-        if (text[2] == "增加"):
-            create_opt.__update_opt__('package','增加'+text[3])
-            filename =  'C:/Users/ASUS/botqq/' + text[1] + '_opt.txt'
-            with open(filename, "r") as f:
-                d = f.read()
-        if (text[2] == "减少"):
-            create_opt.__update_opt__('package','减少'+text[3])
-            filename =  'C:/Users/ASUS/botqq/' + text[1] + '_opt.txt'
-            with open(filename, "r") as f:
-                d = f.read()
-        if (text[2] == "使用"):
-            create_opt.use_equip_package_change('use',text[3])
-            
-        if (text[2] == "查询"):
-            create_opt.use_equip_package_change('lookup',text[3])
-
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain(d)
-        ]))
-
-    if (text[0] == "#经验"):
-        # 【#经验 hehe 10000
-        # 后续需绑定id
-        if len(text) == 3:
-            create_opt = si.operator(text[1],0,0,0,0)
-            create_opt.__update_opt__('exp','增加' + text[2])
-            create_opt.opt_upgrade()
-            exp_ = create_opt.read_opt()['exp']
-            level_ = create_opt.read_opt()['level']
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text[1]+':\n当前的经验值为:'+str(exp_)+'\n当前的等级为:'+str(level_))
-            ]))
-        else:
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain('输入错误')
-            ]))
-            
-
-
-    #### prts ####
-    if(text[0] == '#prts'):
-        prts_1 = prts(text[1])
-        # 自查保护机制
-        if text[1] == '凯尔希':
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain('我的情况由我自己判断，各位应该把注意力放在其他需要帮助的感染者身上。')
-            ]))
-            return
-        
-        text_kal = random.sample(text_table,1)[0] + '\n'
-        # print(text_kal)
-        # 技能专精材料
-        if text[2] == '技能专精':
-            try:
-                out_list = prts_1.MasteryMetarialGet()
-            except:
-                out_list = ['……输入错误了，看起来失忆对你造成了不小的影响']
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '\n'+'\n'.join(out_list))
-            ]))
-
-        elif text[2] =='信息':
-            try:
-                out_list = prts_1.BaseInfoGet()
-            except:
-                out_list = ['……输入错误了，看起来失忆对你造成了不小的影响']
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '\n'+'\n'.join(out_list))
-            ]))
-
-        elif text[2] =='晋升材料':
-            try:
-                out_list = prts_1.EliteMetarialGet()
-            except:
-                out_list = ['……输入错误了，看起来失忆对你造成了不小的影响']
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '\n'+'\n'.join(out_list))
-            ]))
-
-        elif text[2] =='属性':
-            try:
-                out_list = prts_1.AttributeGet()
-            except:
-                out_list = ['……输入错误了，看起来失忆对你造成了不小的影响']
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '\n'+'\n'.join(out_list))
-            ]))
-
-        elif text[2] =='后勤':
-            try:
-                out_list = prts_1.LogisticsSkill()
-            except:
-                out_list = ['……输入错误了，看起来失忆对你造成了不小的影响']
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '\n'+'\n'.join(out_list))
-            ]))
-
-        elif text[2] =='专精图':
-            try:
-                prts_1.MasteryPicGet()
-                out_list = ['或许我们思索的并不是同一件事。']
-            except:
-                out_list = ['……输入错误了，看起来失忆对你造成了不小的影响']
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '\n'+'\n'.join(out_list)),
-                Image.fromLocalFile('./botqq/temp.png')
-            ]))
-
-        elif text[2] == '生日':
-            try:
-                out_list = prts_1.BirthdayGet()
-            except:
-                out_list = ['……输入错误了，看起来失忆对你造成了不小的影响']
-            await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '\n这位干员的生日是'+out_list)
-            ]))
-        # await app.sendGroupMessage(group, MessageChain.create([
-        #     Plain(f'我说的太多了，你应该`http://prts.wiki/w/{text[1]}`'+'\n去自己看看')
-        # ]))
 
 if __name__ == "__main__":
     app.launch_blocking()
