@@ -8,28 +8,28 @@
 ## 更新 21.09.06
 
 #### 1.优化bot文件目录
-> |---MessageProcessor # 消息标准化处理中心
-> |---bot2             # bot主体启动文件
-> |---AuthSet          # 权限系统
-> |---story_xu         # 核心函数
-> |---readme           # 代码介绍
-> |---database: 
-> |---|---Kal-tsit.db  # 数据库
-> |---|---beijing.pkl  # 地图文件
-> |---|---temp.png     # 缓存
-> |---function：
-> |---|---prts                 # prts功能
-> |---|---ForcastForTricks     # 天气预报功能
-> |---|---DarkTemple           # 消息处理器
-> |---|---squads_init          # 初始化干员
-> |---|---operator_rollbox_bot # 群作业系统
-
+> |---MessageProcessor # 消息标准化处理中心  
+> |---bot2             # bot主体启动文件  
+> |---AuthSet          # 权限系统  
+> |---story_xu         # 核心函数  
+> |---readme           # 代码介绍  
+> |---database:   
+> |---|---Kal-tsit.db  # 数据库  
+> |---|---beijing.pkl  # 地图文件  
+> |---|---temp.png     # 缓存  
+> |---function：  
+> |---|---prts                 # prts功能  
+> |---|---ForcastForTricks     # 天气预报功能  
+> |---|---DarkTemple           # 消息处理器  
+> |---|---squads_init          # 初始化干员  
+> |---|---operator_rollbox_bot # 群作业系统  
+  
 ### 2.添加/修改了功能
 
-- 权限系统
-- 天气/地图查询
-- jieba分词器
-- prts查询爬虫
+- 权限系统  
+- 天气/地图查询  
+- jieba分词器  
+- prts查询爬虫  
 
 **21.09.06 by KOneLane**
 
