@@ -2,17 +2,17 @@
 # coding:utf-8
 
 ###### Kal'tsit Main Program ######
-### arknights homework bot V2.1 ###
+### arknights homework bot V2.5 ###
 ###      Author: KOneLane       ###
 ###    Engine&Support: Mirai    ###
-###   Latest Update: 21.09.06   ###
+###   Latest Update: 21.12.18   ###
 
 
 from graia.broadcast import Broadcast
 from graia.application import GraiaMiraiApplication, Session
 from graia.application.message.chain import MessageChain
 import asyncio
-from graia.application.message.elements.internal import Plain,At,Image
+from graia.application.message.elements.internal import Image_LocalFile, Image_NetworkAddress, Plain,At,Image
 from graia.application.friend import Friend
 
 import os
@@ -26,6 +26,9 @@ import function.squads_init as si
 # import story_xu as sx
 from function.DarkTemple import Monster3
 from function.DarkTemple import SweepSquad
+from function.stopRepeat import stopRepeatQueue
+from function.Desk import kaltsitDesk
+
 
 # 系统功能库
 from AuthSet import AuthSet
@@ -39,7 +42,7 @@ bcc = Broadcast(loop=loop)
 app = GraiaMiraiApplication(
     broadcast=bcc,
     connect_info=Session(
-        host="http://localhost:8080", # 填入 httpapi 服务运行的地址
+        host="http://localhost:8082", # 填入 httpapi 服务运行的地址
         authKey="KOneLaneKaltsit", # 填入 authKey
         account=591016144, # 你的机器人的 qq 号
         websocket=True # Graia 已经可以根据所配置的消息接收的方式来保证消息接收部分的正常运作.
@@ -96,7 +99,7 @@ async def arknights_hw_rollbox(
     group: Group,
     member: Member
 ):
-    slightly_inittext = MessageProcesser(message,member)
+    slightly_inittext = MessageProcesser(message,group,member)
     init_text = slightly_inittext.text_processer()
     # print(init_text)
     msgout = init_text
@@ -104,7 +107,9 @@ async def arknights_hw_rollbox(
     msg_out是个字典:
     'id':          QQ号 self.id,
     'text_split':  根据空格分词结果 message.get(Plain)[0].text.split(' '),
-    'text_jieba':  分词结果
+    'text_jieba':  分词结果,
+    'group_id':    群号,
+    'text_ori':    原始消息文本
     """
     text = msgout['text_split']
 
@@ -118,55 +123,63 @@ async def arknights_hw_rollbox(
 
     
     sweepSquad = SweepSquad(msgout)
-    #### prts
-    prts_text = sweepSquad.prts()
-    if prts_text:
-        text_kal = random.sample(text_table,1)[0] + '\n'
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain(text_kal +'\n'+ prts_text)
-        ]))
-
-    #### 复读
-    repeat_text = sweepSquad.repeat()
-    if repeat_text:
-        text_kal = random.sample(text_table,1)[0] + '\n'
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain(repeat_text)
-        ]))
-    #### 夸夸
-    praise_text = sweepSquad.praise_()
-    if praise_text:
-        text_kal = random.sample(text_table,1)[0] + '\n'
-        await app.sendGroupMessage(group, MessageChain.create([
-            At(msgout['id']),Plain(praise_text)
-        ]))
-
-    # #### 天气+地图
-    map_weather_text = sweepSquad.map_weather()
-    if map_weather_text:
-        text_kal = random.sample(text_table,1)[0] + '\n'
-
-        if map_weather_text =='map':
+    #### SS.checkWords
+    return_text,kal_text_order = sweepSquad.checkWords()
+    if return_text:
+        if kal_text_order == 'random':
+            text_kal = random.sample(text_table,1)[0] + '\n'
             await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal +'这是这次行动附近的路线图')+Image.fromLocalFile("./database/image.png")
+                Plain(text_kal +'\n'+ return_text)
             ]))
-        elif map_weather_text == '地点不存在':
+        elif kal_text_order in ['random','查询的天气大致如此']:
             await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '博士，这个地方没有人听说过，我想你应该不会想着进入二次元吧。')
+                Plain(kal_text_order +'\n'+ return_text)
+            ]))
+        elif kal_text_order == 'picture':
+            await app.sendGroupMessage(group, MessageChain.create([
+                Plain(random.sample(text_table,1)[0]),
+                Image_NetworkAddress(return_text)
+            ]))
+        elif kal_text_order.startswith('at'):
+            await app.sendGroupMessage(group, MessageChain.create([
+                At(kal_text_order[2::]),
+                Plain('\n' + return_text)
             ]))
         else:
             await app.sendGroupMessage(group, MessageChain.create([
-                Plain(text_kal + '查询的天气大致如此: \n' + map_weather_text)
+                Plain(return_text)
             ]))
 
+    ##############
+    # 复读打断功能
+    test = stopRepeatQueue(msgout)
+    check_table_if_exist = test.checkTables() # 1和0
+    
+    if check_table_if_exist != 0:
+        # print(test.activeRun())
+        temp_text = test.activeRun()
+        if not temp_text:
+            pass
+        elif temp_text == '咳咳':
+            await app.sendGroupMessage(group, MessageChain.create([
+                Image_LocalFile('./botqq/database/stopRepeat.jpg')
+                # Image(url = 'https://m1.im5i.com/2021/11/19/Un5Qhf.jpg')
+            ]))
+    else:
+        test.databaseInit()
 
-    #### 跑团
-    dnd_text = sweepSquad.dnd_kaltsit()
-    if dnd_text:
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain(dnd_text)
-        ]))
-
+    ##############
+    # 漂流瓶功能
+    test_driftingbottle = kaltsitDesk(msgout)
+    if msgout['text_ori'][0:2] in ['#捞','#投']:
+        return_text = test_driftingbottle.kaltsitDeskApi()
+        if return_text is not None:
+            await app.sendGroupMessage(group, MessageChain.create([
+                Plain(return_text)
+            ]))
+    else:
+        pass
+        
 
     id = str(member.id)
     #### 权限模块
@@ -201,9 +214,9 @@ async def arknights_hw_rollbox(
             ]))
 
 
-    # 暂时删除群作业系统
+    # 暂时删除群作业系统 - 附加模块
     if message.asDisplay().startswith("#hw"):
-        f = os.popen('python ./botqq/operator_rollbox_bot.py','r')
+        f = os.popen('python ./botqq/function/operator_rollbox_bot.py','r')
         d = f.read()  # 读文件
         # print(message.get('source'))
         await app.sendGroupMessage(group, MessageChain.create([
@@ -220,7 +233,12 @@ async def arknights_hw_rollbox(
             Plain(d)
         ]))
 
-
+    # # 对联
+    # couplet_text = sweepSquad.coupletGet()
+    # if couplet_text:
+    #     await app.sendGroupMessage(group, MessageChain.create([
+    #         Plain(couplet_text)
+    #     ]))
 
 if __name__ == "__main__":
     app.launch_blocking()

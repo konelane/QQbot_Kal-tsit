@@ -44,11 +44,11 @@ class ForcastForTricks():
         geolocator = Nominatim(user_agent="kal-tsit")
         location = geolocator.geocode(self.text[1])
         if not location:
-            return '地点不存在'
+            return
         else:
             self.lon = location.longitude
             self.lat = location.latitude
-            return 
+            return 'updated'
 
     def __url_sky_get(self):
         """天气json数据获取"""
@@ -62,14 +62,14 @@ class ForcastForTricks():
 
     def __map_get(self):
         """画地图"""
-        if not self.__location_get():
+        if self.__location_get():
         # G = pickle.load(open('database/beijing.pkl','rb'))
         # loc_node = ox.get_nearest_node(G, (self.lat,self.lon))
         # 联网条件
             G = ox.graph_from_point((self.lat,self.lon), dist=int(self.text[2]), network_type='all')
-            if os.path.exists('database/temp.png'):
-                os.remove('database/temp.png')
-            ox.plot_graph(G,show=False,save=True,filepath='database/temp.png')
+            if os.path.exists('C:/Users/Administrator/botqq/database/temp.png'):
+                os.remove('C:/Users/Administrator/botqq/database/temp.png')
+            ox.plot_graph(G,show=False,save=True,filepath='C:/Users/Administrator/botqq/database/temp.png')
             return 'map'
         else:
             return '地点不存在'

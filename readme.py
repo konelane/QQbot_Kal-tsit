@@ -1,25 +1,36 @@
+'''
+Author: KOneLane
+Date: 2021-05-13 14:47:36
+LastEditors: KOneLane
+LastEditTime: 2022-01-17 11:02:55
+Description: arknights homework bot
+version: V2.5
+'''
 #! /usr/bin/env python3
 # coding:utf-8
 
 ######### Readme Document #########
-### arknights homework bot V2.1 ###
+### arknights homework bot V2.5 ###
 ###      Author: KOneLane       ###
 ###    Engine&Support: Mirai    ###
-###   Latest Update: 21.09.06   ###
+###   Latest Update: 21.12.18   ###
 
 
 print("博士，你好，我是Kal'tsit")
 print()
 print('别紧张，我只是碰巧路过你的办公室。')
-print('【帮助】输入#help可以查看所有可用的命令') # 即 运行当前文档
-print('【作业】输入#hw可以抽取一次群作业，今天的工作也很繁忙。')
-print('【表扬】输入#praise大概可以被机器人关爱，你不会这么无聊的对吧。')
+print('【帮助】输入#help 可以查看所有可用的命令') # 即 运行当前文档
+print('【作业】输入#hw 可以抽取一次自限作业')
+print('【表扬】输入#praise 大概可以被机器人关爱，你不会这么无聊的对吧。')
 # print('')
 # print('-----------跑团-----------')
 # print('这种麻烦事以后别来找我，可露希尔或许会感兴趣。')
 # print('【车卡】干员初始化请输入#初始化 姓名 魅力 敏捷 强度 智力')
 # print('demo:#初始化 doctor 1 2 3 4')
 print('【掷骰】请输入.r ndx，其中n是骰子数量，x是骰子面数。')
+print('【new*抽卡】输入#draw 可以从二次元召唤一张图片。不可以瑟瑟！')
+print('【new*迷宫】输入#ad 可以刷新一张地下城迷宫，输入#ad 1234(数字表示经过怪物的顺序)，计算得分比大小。')
+print('注：迷宫功能仍在开发中，欢迎提供建议。')
 # print('demo:.r 3d8')
 # print('【读取】干员/博士数据请输入#读取 干员/博士名称')
 # print('demo:#读取 doctor')
@@ -30,36 +41,46 @@ print('【掷骰】请输入.r ndx，其中n是骰子数量，x是骰子面数�
 # print('【经验增加】请输入#经验 姓名 数值')
 # print('demo:#经验 doctor 1000')
 # print()
+print('【对联】输入#对 上联 ，即能获得一句语焉不详的下联，你一定很喜欢谜语吧，博士。')
+print('【ygo查卡】输入 #查卡 卡片中文名称 ，即可查询内容。')
 print('-----------PRTS-----------')
-print('我可以帮你查一些简单的信息……但请不要依赖这一点，我很忙。')
+# print('我可以帮你查一些简单的信息……但请不要依赖这一点，我很忙。')
 print('【PRTS查询】输入#prts 干员名称 项目【包括：技能专精,晋升材料,属性,后勤,生日】')
-print('demo:#prts 德克萨斯 技能专精')
+print('----例:#prts 德克萨斯 技能专精')
 print('【天气】输入#天气 龙门 今日【目前开放了今日】')
-print('【地图】输入#地图 龙门 500【500表示显示周围500范围】')
+# print('【地图】输入#地图 龙门 500【500表示显示周围500范围】')
 # print('--------cos干员--------')
 # print('权限系统、爬虫性能优化、建立数据库')
-print('-----最新更新于0906-----')
+print('-----最新更新于211126-----')
 print('项目地址:https://github.com/konelane/QQbot_Kal-tsit')
 # print('权限系统【已配置未实装】、爬虫性能优化【done！】')
 # print('建立数据库【done！】、天文爱好者天气/星象预报【开发中】、优化功能触发模块【未开始】')
 print('-----------EOF--生日21.05.12-----------')
 
-## 更新记录 21.09.06
+## 更新记录 21.11.26
 ## 优化bot文件目录
 # |---MessageProcessor # 消息标准化处理中心
 # |---bot2             # bot主体启动文件
 # |---AuthSet          # 权限系统
 # |---story_xu         # 核心函数
-# |---readme           # 代码介绍
+# |---readme           # 项目介绍-帮助
 # |---database: 
-# |---|---Kal-tsit.db  # 数据库
-# |---|---beijing.pkl  # 地图文件
-# |---|---temp.png     # 缓存
+# |---|---Kal-tsit.db      # 数据库
+# |---|---beijing.pkl      # 地图文件
+# |---|---temp.png         # 缓存图片
+# |---|---stopRepeat.jpg   # 打断复读图片
+# |---|---adventureMap.pkl # 生成的地下城地图
 # |---function：
 # |---|---prts                 # prts功能
 # |---|---ForcastForTricks     # 天气预报功能
-# |---|---DarkTemple           # 消息处理器
+# |---|---DarkTemple           # 消息处理器-功能核心组件
 # |---|---squads_init          # 初始化干员
-# |---|---operator_rollbox_bot # 群作业系统
+# |---|---praise               # 夸夸
+# |---|---CardSearch           # ygo查卡功能
+# |---|---couplet              # 对对子，出对！
+# |---|---operator_rollbox_bot # 自限作业抽取
+# |---|---adventure            # 肉鸽迷宫
+# |---|---stopRepeat           # 打断复读
 # 
 # 愿世界永葆和平。
+# 最后的稳定框架版本组合 mcl：2.7.1-dev-1；mah：1.12.0

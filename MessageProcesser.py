@@ -3,16 +3,18 @@
 
 from graia.application.message.chain import MessageChain
 from graia.application.message.elements.internal import Plain,At,Image
+
 import jieba # 实验性分词
 import re
 from functools import partial
 
+
 class MessageProcesser:
-    """消息标准化处理器"""
+    """消息标准化处理器-群聊类"""
     def __init__(
         self
         ,message
-        # ,group
+        ,group
         ,member
     ) -> None:
         self.text = message.get(Plain)[0].text
@@ -20,7 +22,11 @@ class MessageProcesser:
         self.msgout = {
             'id':self.id,
             'text_split':message.get(Plain)[0].text.split(' '),
-            'text_jieba':''
+            'text_jieba':'',
+            'group_id':group.id,
+            'text_ori':self.text,                                # 21.11.26 添加复读打断功能时加入
+            'type':'group'                                       # 21.12.17 添加漂流瓶功能时加入
+            # 'pub_time':''
         }
         pass
 
@@ -28,7 +34,7 @@ class MessageProcesser:
         jieba.initialize()
         # 添加用户专门词
         newwords = [
-            '老女人','谜语人','凯尔希','猞猁','哈哈哈哈哈','舰桥'
+            '老女人','谜语人','凯尔希','猞猁','哈哈哈哈哈','舰桥','冒泡'
         ]
         for word in newwords:
             jieba.add_word(word,1000000)
@@ -48,3 +54,26 @@ class MessageProcesser:
         token = self.__jieba_prepare()
         self.msgout['text_jieba'] = token
         return self.msgout
+
+
+
+class PersonalNoteIndex:
+    """消息标准化处理器-群聊类"""
+    def __init__(
+        self
+        ,message
+        ,group
+        ,member
+    ) -> None:
+        self.text = message.get(Plain)[0].text
+        self.id = member.id
+        self.msgout = {
+            'id':self.id,
+            'text_split':message.get(Plain)[0].text.split(' '),
+            # 'text_jieba':'',
+            # 'group_id':group.id,
+            'text_ori':self.text,                                # 21.11.26 添加复读打断功能时加入
+            'type':'person'                                       # 21.12.17 添加漂流瓶功能时加入
+            # 'pub_time':''
+        }
+        pass
