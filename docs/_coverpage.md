@@ -9,4 +9,4 @@
 * 鸣谢：明日方舟以及所有热爱这款游戏的博士们
 
 [GitHub](https://github.com/konelane/QQbot_Kal-tsit)
-[让我们开始吧](/)
+[让我们开始吧](/?id=qqbot-kal39tsit)
