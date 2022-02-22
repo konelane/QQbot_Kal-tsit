@@ -24,6 +24,8 @@
 
 ## 备注
 
+依赖库：Mirai，Graia-ariadne (已更新)
+
 目前仍处于开发阶段，作者非计算机出身，进度缓慢见谅，<del>潦草警告</del>，欢迎一起来搞事！
 
 项目地址：[QQbot_Kal-tsit](https://github.com/konelane/QQbot_Kal-tsit)
