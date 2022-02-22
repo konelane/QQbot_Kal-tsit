@@ -1,3 +1,11 @@
+'''
+Author: KOneLane
+Date: 2021-09-14 13:00:02
+LastEditors: KOneLane
+LastEditTime: 2022-02-13 22:57:17
+Description: 
+version: V
+'''
 #! /usr/bin/env python3
 # coding:utf-8
 
@@ -29,7 +37,7 @@ class couplet_api:
         option.add_experimental_option('excludeSwitches', ['enable-logging'])#禁止打印日志 # 没用
         option.add_experimental_option('excludeSwitches', ['enable-automation'])#实现了规避监测
         option.add_argument('log-level=3')#INFO = 0 WARNING = 1 LOG_ERROR = 2 LOG_FATAL = 3 default is 0
-        option.add_argument('head')#“有头”模式，即可以看到浏览器界面，若要隐藏浏览器，可设置为 "headless"
+        option.add_argument('headless')#“有头”模式，即可以看到浏览器界面，若要隐藏浏览器，可设置为 "headless"
         option.add_argument('--disable-javascript')
         dr0 = webdriver.Chrome(chrome_options = option)#得到操作对象
         return dr0

@@ -19,7 +19,16 @@ from function.couplet import couplet_api
 from function.ForcastForTricks import ForcastForTricks
 from function.adventure import TerraRogue
 from function.prts import Prts
+from function.StarCraftPVE import StarCraftPVE
+from function.twotwoorder import TwoTwoOrder
 # from function.Desk import kaltsitDesk
+
+# 不触发功能的账号
+blockID = [
+    '1982751087'
+]
+
+
 
 class Monster3:
     """关键词-功能 核心库"""
@@ -36,7 +45,7 @@ class Monster3:
             '老女人','谜语人','谜语','鹰语','猞猁'
         ]
         self.meaning_less_text = [
-            '好耶','哈哈哈哈哈','冒泡','打牌','黑暗决斗' # 慎重添加出警词汇
+            '好耶','哈哈哈哈哈','打牌','黑暗决斗' # 慎重添加出警词汇
         ]
 
         pass
@@ -79,6 +88,10 @@ class Monster3:
 
     def check_words(self):
         """核心功能/暴露接口"""
+        if self.id in blockID:
+            return None
+
+
         a = [x for x in self.text_list if x in self.disappoint_text]
         # b = [x for x in self.text_list if x in self.w_cos_text]
         c = [x for x in self.text_list if x in self.meaning_less_text]
@@ -105,6 +118,7 @@ class SweepSquad:
         self.text_list = msg_info['text_split']
         
 
+
         # 词语配置
         self.repeat_mod = ['好耶']#['？','?','好耶']
         self.prts_text = ['#prts']
@@ -115,12 +129,19 @@ class SweepSquad:
         self.cardSearch_text = ['#查卡']
         self.picBlindBox_text = ['#draw']
         self.adventure = ['#ad']
+        self.starcraft = ['#sc']
+        self.twotwo = ['22','#22']
         # self.driftingBottle_text = ['#捞', '#投']
 
         pass
 
     def checkWords(self):
         """功能核心激活函数"""
+        if self.id in blockID:
+            return None, None
+        
+        
+        
         if self.text_list[0] in self.repeat_mod:
             return self.__repeat(),None
         elif self.text_list[0] in self.prts_text:
@@ -143,6 +164,10 @@ class SweepSquad:
             return self.__picBlindBox(),'picture'
         elif self.text_list[0] in self.adventure:
             return self.__adventure(), None
+        elif self.text_list[0] in self.starcraft:
+            return self.__starcraft(), None
+        elif self.text_list[0] in self.twotwo:
+            return self.__twotwoorder(), 'local_picture'
         # elif self.text_list[0] in self.driftingBottle_text:
         #     return self.__driftingBottle(), None
 
@@ -161,7 +186,7 @@ class SweepSquad:
 
     def __prts(self):
         """prts查询功能"""
-        prts_mod = ['技能专精','晋升材料','属性','后勤','生日']
+        prts_mod = ['技能专精','晋升材料','属性','后勤','生日','今日生日']
         exception_squad = ['凯尔希']
         if len(self.text_list)<= 2:
             return None
@@ -181,6 +206,8 @@ class SweepSquad:
                 out_list = prts_1.LogisticsSkill()
             if self.text_list[2] == '生日':
                 out_list = '这位干员的生日是' + prts_1.BirthdayGet()
+            if self.text_list[2] == '今日生日':
+                out_list = prts_1.TodayBirthday()
         return ''.join(x for x in out_list)
 
 
@@ -320,6 +347,32 @@ class SweepSquad:
                 temp = TerraRogue(init = False)
                 out_text = temp.answerSheet(str(self.text_list[1]))
             return out_text
+
+
+    def __starcraft(self):
+        if self.text_list[0] != '#sc':
+            return 
+        else:
+            if len(self.text_list) == 1: # 即使用#sc查本周突变的
+                temp = StarCraftPVE('下周突变')
+                return temp.NextTubian()
+            elif len(self.text_list[1])>2:
+                temp = StarCraftPVE(self.text_list[1])
+                out_text = temp.TubianSearch()
+            else:
+                temp = StarCraftPVE('第k周后的突变')
+                out_text = temp.NextTubian(int(self.text_list[1])-1)
+            return out_text
+
+
+    def __twotwoorder(self):
+        """22牌桌功能"""
+        if self.text_list[0] not in ['22','#22']:
+            return 
+        else:
+            temp = TwoTwoOrder(self.msg_info)
+            return temp.checkOrder() # 图片地址
+        
 
 
     # def __driftingBottle(self):

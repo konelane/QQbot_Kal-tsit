@@ -1,8 +1,16 @@
+'''
+Author: KOneLane
+Date: 2021-08-27 17:28:01
+LastEditors: KOneLane
+LastEditTime: 2022-02-21 18:02:52
+Description: 
+version: V
+'''
 #! /usr/bin/env python3
 # coding:utf-8
 
-from graia.application.message.chain import MessageChain
-from graia.application.message.elements.internal import Plain,At,Image
+from graia.ariadne.message.chain import MessageChain
+from graia.ariadne.message.element import Plain, At, Image
 
 import jieba # 实验性分词
 import re

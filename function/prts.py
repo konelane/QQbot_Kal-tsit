@@ -124,6 +124,24 @@ class Prts:
         return dict_temp
         
 
+    def TodayBirthday(self):
+        """
+        待更新：
+         - 1.无干员生日时
+         - 2.多干员生日时
+        """
+        url = "https://prts.wiki/w/%E9%A6%96%E9%A1%B5/%E4%BA%AE%E7%82%B9%E5%B9%B2%E5%91%98/%E4%BB%8A%E5%A4%A9%E7%94%9F%E6%97%A5" # https://prts.wiki/w/首页/亮点干员/今天生日
+        page = requests.get(url)
+        soup = bs(page.content, 'html.parser')
+        ansss = soup.find_all("",class_="mp-operators-icons")
+        if not ansss:
+            return("谢谢你的关心博士，不过今日没有干员过生日") 
+        else:
+            ansss_str = str(ansss[0])
+            idx = re.search('title="', ansss_str).span()[1]
+            name_birth = ansss_str[idx:].split('\"')[0]
+            return (f"今天过生日的干员是{name_birth}")
+
 
     # ## 萌百-访问可能被拒绝，需要验证码
     # def GengInfoGet(self):
@@ -139,10 +157,11 @@ class Prts:
 
 
 if __name__ == "__main__":
-    pass
+    # pass
     prts_1 = Prts('桃金娘')
-    print(prts_1.MasteryMetarialGet())
+    # print(prts_1.MasteryMetarialGet())
     # print(prts_1.EliteMetarialGet())
     # print(prts_1.BirthdayGet())
     # print(prts_1.LogisticsSkill())
     # print(prts_1.LogisticsSkillSearch())
+    print(prts_1.TodayBirthday())

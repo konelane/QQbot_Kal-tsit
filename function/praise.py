@@ -353,7 +353,7 @@ adjective = [
 #     print
 
 def praise():
-    print("你他吗真的{adjective1}".format(adjective1 = random.sample(adjective,1)[0]),"!")
+    print("博士，你他喵真的{adjective1}".format(adjective1 = random.sample(adjective,1)[0]),"!")
 
 # R-part
 # praise <- function(template = "You are ${adjective}!") {
