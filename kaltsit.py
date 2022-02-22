@@ -140,7 +140,7 @@ async def arknights_hw_rollbox(
                 ]))
                 
             elif type(return_text[1]) != list:
-                # 人没齐
+                # 人没齐 / 有差错
                 await app.sendGroupMessage(group, MessageChain.create([
                     Plain(return_text[1]+"\n"),
                     Image(path=return_text[0])
@@ -151,7 +151,7 @@ async def arknights_hw_rollbox(
                     At(int(return_text[1][0])),At(int(return_text[1][1])),At(int(return_text[1][2])),At(int(return_text[1][3])),
                     Image(path=return_text[0])
                 ]))
-
+                # 删除最后的牌桌
 
         elif kal_text_order is not None:
             if kal_text_order.startswith('at'):
@@ -177,7 +177,7 @@ async def arknights_hw_rollbox(
             pass
         elif temp_text == '咳咳':
             await app.sendGroupMessage(group, MessageChain.create([
-                Image(url = './botqq/database/stopRepeat.jpg')
+                Image(path = './botqq/database/stopRepeat.jpg')
                 # Image(url = 'https://m1.im5i.com/2021/11/19/Un5Qhf.jpg')
             ]))
     else:
@@ -252,6 +252,8 @@ async def arknights_hw_rollbox(
 
 if __name__ == "__main__":
     # app.launch_blocking()
-    loop.run_until_complete(app.lifecycle())
-
+    try:
+        loop.run_until_complete(app.lifecycle())
+    except:
+        pass
 

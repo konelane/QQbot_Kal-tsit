@@ -2,7 +2,7 @@
 Author: KOneLane
 Date: 2022-02-21 21:10:45
 LastEditors: KOneLane
-LastEditTime: 2022-02-22 16:20:34
+LastEditTime: 2022-02-23 01:51:52
 Description: 
 version: V
 '''
@@ -40,7 +40,25 @@ class TwoTwoOrder:
         self.wait_status = 1
         self.creator = str(self.input_text_dict['id']) # 默认当前消息的creator是消息本人
         self.table_no = 0
-        pass
+        
+
+    def __reset(self):
+        """还原设定"""
+        self.cardTable = {
+            'table_no':0,
+            'member_length':2,
+            'creator': str(self.input_text_dict['id']),
+            'group_number': str(self.input_text_dict['group_id']),
+            'member':'591016144|',
+            'wait_status':1,
+            'create_time':datetime.datetime.now(),
+            
+        } # 用于保存报名信息
+        self.TableHeader = ['table_no', 'member_length', 'creator', 'group_number', 'member', 'wait_status', 'create_time'] # 读取时使用
+
+        self.wait_status = 1
+        self.creator = str(self.input_text_dict['id']) # 默认当前消息的creator是消息本人
+        self.table_no = 0
 
 
     def __connectSqlite(self):
@@ -56,6 +74,23 @@ class TwoTwoOrder:
         return member_list
 
 
+    def __removePic(self, creator):
+        # 删除图片
+        group_id = self.cardTable['group_number'] # 当前群组id
+        for img_id in range(4):
+            remove_path1 = f'./botqq/database/qlogo/{creator}_{group_id}_{img_id}_c.png'
+            remove_path2 = f'./botqq/database/qlogo/{creator}_{group_id}_{img_id}.png'
+            try:
+                os.remove(remove_path1)# 删除图片
+                os.remove(remove_path2)# 删除图片
+            except:
+                pass
+        try:
+            os.remove(f'./botqq/database/table_{creator}_{group_id}.jpg')
+        except:
+            pass
+
+
     def __buildTable(self):
         """
         新建牌桌 #22 等
@@ -63,7 +98,7 @@ class TwoTwoOrder:
         """
         # 检查是否已建立正在等待成员的牌桌
         if not self.__getTableMessage(self.creator):
-
+            self.__removePic(self.creator) # 删除别群存好的图片
             # 建立dict
             self.cardTable['creator'] = str(self.input_text_dict['id'])
             self.creator = self.cardTable['creator'] # 更新creator信息
@@ -74,12 +109,12 @@ class TwoTwoOrder:
             # 将信息保存至数据库
             self.wait_status = 1 # 查询筛选用的
             self.__dataSave(new=True)
-            # 返回路径
-            return self.__imgTable()
+            
+            return ''
         else:
             print('已有自己的牌桌')
             print(self.cardTable)
-            return 
+            return '已有自己的牌桌'
 
 
     def __shutdownTable(self):
@@ -95,24 +130,13 @@ class TwoTwoOrder:
             except:
                 print('删除失败')
 
-            # 删除图片
-            for img_id in range(4):
-                remove_path1 = f'./botqq/database/qlogo/{self.creator}_{img_id}_c.png'
-                remove_path2 = f'./botqq/database/qlogo/{self.creator}_{img_id}.png'
-                try:
-                    os.remove(remove_path1)# 删除图片
-                    os.remove(remove_path2)# 删除图片
-                except:
-                    pass
-            try:
-                os.remove(f'./botqq/database/table_{self.creator}.jpg')
-            except:
-                pass
+            self.__removePic(self.creator) # 删除图片
+            return ''
         else:
             print('未建立牌桌，无需关闭')
-            
+            return '未建立牌桌，无需关闭'
 
-        pass
+        
 
         
 
@@ -170,7 +194,7 @@ class TwoTwoOrder:
         # 查找本群存在的可加入牌桌
         try:
             con,cur = self.__connectSqlite()
-            cur.execute("SELECT * FROM twotwolist WHERE group_number = ? AND wait_status = 1 LIMIT 1",(str(self.input_text_dict['group_id']),)) # 只取最早的一条
+            cur.execute("SELECT * FROM twotwolist WHERE group_number = ? AND wait_status = 1 ORDER BY `create_time` DESC LIMIT 1",(str(self.input_text_dict['group_id']),)) # 只取最新的一条
             test = list(cur.fetchall()[0])
             dict_of_text = dict(zip(self.TableHeader, test))
             self.cardTable.update(dict_of_text) # 根据查询到的牌桌更新
@@ -180,12 +204,20 @@ class TwoTwoOrder:
             con.close()
         except:
             print('本群无可加入牌桌')
-            return 
+            return '本群无可加入牌桌'
         # 有可加入牌桌的前提下：
+        # 检查是否已有自己的牌桌
+        if self.__getTableMessage(id_original):
+            print('已有牌桌')
+            self.__reset()
+            return '已有牌桌'
+
         # - 检查是否已经加入
         if str(self.input_text_dict['id']) in self.__checkMember():
             print('已在牌桌中')
-            return 
+            self.__reset()
+            return '已在牌桌中'
+
         # - 为牌桌添加成员
         self.cardTable['member'] = self.cardTable['member'] + str(self.input_text_dict['id']) + '|'
         self.cardTable['member_length'] += 1
@@ -194,8 +226,8 @@ class TwoTwoOrder:
             self.cardTable['wait_status'] = self.wait_status
             print('牌桌状态已更新')
         self.__dataSave() # 保存最新的dict数据
-
-        pass
+        return ''
+        
 
 
     def leaveTable(self):
@@ -226,19 +258,20 @@ class TwoTwoOrder:
     def __imgTable(self):
         """获取排队人头像，制图"""
         id_list = self.__checkMember()  # 获取当前member
+        group_id = self.cardTable['group_number'] # 当前群组id
         for i in range(self.cardTable['member_length']):
             # print(i)
             url1 = f"http://q1.qlogo.cn/g?b=qq&nk={str(id_list[i])}&s=640" # qq头像接口
             img_temp = urllib.request.urlopen(url1, timeout=30)
             if img_temp is not None:
-                with open(f'./botqq/database/qlogo/{self.creator}_{i}.png', 'wb') as f:
+                with open(f'./botqq/database/qlogo/{self.creator}_{group_id}_{i}.png', 'wb') as f:
                     f.write(img_temp.read())
                     f.flush()
                     f.close()
                 self.__circle(i)
         # 将四张图片拼在一起
         for i in range(self.cardTable['member_length']):
-            if os.path.exists(f'./botqq/database/table_{self.creator}.jpg'):
+            if os.path.exists(f'./botqq/database/table_{self.creator}_{group_id}.jpg'):
                 out_dir = self.__mixPicture(i, if_exist=True) # 将图片路径返回
             else:
                 out_dir = self.__mixPicture(i, if_exist=False) # 将图片路径返回
@@ -246,13 +279,14 @@ class TwoTwoOrder:
 
 
     def __circle(self, img_id):
-        img_path = f'./botqq/database/qlogo/{self.creator}_{img_id}.png'
+        group_id = self.cardTable['group_number']
+        img_path = f'./botqq/database/qlogo/{self.creator}_{group_id}_{img_id}.png'
 
         image = cv2.imread(img_path)
         image = cv2.resize(image, (140,140)) # 重塑大小
         cv2.imwrite(img_path, image)
 
-        save_path = f'./botqq/database/qlogo/{self.creator}_{img_id}_c.png' # 保存位置
+        save_path = f'./botqq/database/qlogo/{self.creator}_{group_id}_{img_id}_c.png' # 保存位置
         ima = Image.open(img_path).convert("RGBA")
         size = ima.size
         # 因为是要圆形，所以需要正方形的图片
@@ -283,12 +317,13 @@ class TwoTwoOrder:
         将图片合并在一起
         """
         creator = self.cardTable['creator']
-        img_path = f'./botqq/database/qlogo/{creator}_{img_id}_c.png'
+        group_id = self.cardTable['group_number'] # 当前群组id
+        img_path = f'./botqq/database/qlogo/{creator}_{group_id}_{img_id}_c.png'
 
         if not if_exist:
             base_img = Image.open('./botqq/database/table.jpg')
         else:
-            base_img = Image.open(f'./botqq/database/table_{creator}.jpg')
+            base_img = Image.open(f'./botqq/database/table_{creator}_{group_id}.jpg') # 如果牌桌已存在，则查询现在的creator
         base_img.convert('RGBA')
         img_start_end = [(0,0,140,140),(0,140,140,280),(140,0,280,140),(140,140,280,280)] # 4个位置
 
@@ -299,8 +334,8 @@ class TwoTwoOrder:
         region = region.convert('RGBA')
         base_img.paste(region, box)
         
-        base_img.save(f'./botqq/database/table_{creator}.jpg') #保存图片
-        return f'./botqq/database/table_{creator}.jpg'
+        base_img.save(f'./botqq/database/table_{creator}_{group_id}.jpg') #保存图片
+        return f'./botqq/database/table_{creator}_{group_id}.jpg'
 
 
     def checkOrder(self):
@@ -308,17 +343,29 @@ class TwoTwoOrder:
         if self.input_text[0] not in ['#22','22']:
             return 
         elif self.input_text[1] in ['等','有无']:      # 创建牌桌
-            self.__buildTable()
-            return (self.__imgTable(),'创建成功，赶快上车')
+            temp = self.__buildTable()
+            if temp == '':
+                return (self.__imgTable(),'创建成功，赶快上车')
+            elif temp == '已有自己的牌桌':
+                self.__reset()
+                return ('','已有自己的牌桌')
         elif self.input_text[1] in ['无了','鸽','鸽了']:      # 取消自己的牌桌
-            self.__shutdownTable()
-            return ('','牌桌取消成功')
-        elif self.input_text[1] in ['来','来了','加入','加','上车']: # 加入牌桌
-            self.joinTable()
-            if self.__checkTableEmpty():
-                return (self.__imgTable(),'成功加入，好好享受吧')
+            temp = self.__shutdownTable()
+            if temp == '':
+                return ('','牌桌取消成功')
             else:
-                return (self.__imgTable(), self.__checkMember())
+                return ('',temp)
+        elif self.input_text[1] in ['来','来了','加入','加','上车']: # 加入牌桌
+            temp = self.joinTable()
+            if temp == '':
+                if self.__checkTableEmpty():
+                    return (self.__imgTable(), '成功加入，好好享受吧')
+                else:
+                    return (self.__imgTable(), self.__checkMember())
+            elif temp == '本群无可加入牌桌':
+                return ('','本群无可加入牌桌')
+            else:
+                return  ('', '博士，你还有自己的牌桌，请先`22 鸽了`再加入')
             
         elif self.input_text[1] in ['建表']:
             self.databaseInit()
@@ -328,9 +375,10 @@ class TwoTwoOrder:
 
 if __name__ == "__main__":
     msg = {
-        'id':'2238701273',
-        'text_split':['22','建表'],
+        'id':'3491451433',
+        'text_split':['22','加入'],
         'group_id':'456123qun'
     }
     test = TwoTwoOrder(msg)
-    test.checkOrder()
+    abc = test.checkOrder()
+    print(abc)

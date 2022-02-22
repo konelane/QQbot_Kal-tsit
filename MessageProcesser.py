@@ -25,11 +25,14 @@ class MessageProcesser:
         ,group
         ,member
     ) -> None:
-        self.text = message.get(Plain)[0].text
+        try:
+            self.text = message.get(Plain)[0].text
+        except:
+            self.text = ''
         self.id = member.id
         self.msgout = {
             'id':self.id,
-            'text_split':message.get(Plain)[0].text.split(' '),
+            'text_split':self.text.split(' '),
             'text_jieba':'',
             'group_id':group.id,
             'text_ori':self.text,                                # 21.11.26 添加复读打断功能时加入
