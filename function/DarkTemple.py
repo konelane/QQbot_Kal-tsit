@@ -47,7 +47,7 @@ class Monster3:
         self.text_list = msg_info['text_jieba']
         
         self.disappoint_text = [
-            '老女人','谜语人','谜语','鹰语','猞猁','老妪'
+            '老女人','谜语人','谜语','鹰语','猞猁','老妪','老太婆'
         ]
         self.meaning_less_text = [
             '好耶','哈哈哈哈哈哈哈','打牌','黑暗决斗' # 慎重添加出警词汇

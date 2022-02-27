@@ -2,7 +2,7 @@
 Author: KOneLane
 Date: 2022-02-26 10:40:40
 LastEditors: KOneLane
-LastEditTime: 2022-02-26 21:26:26
+LastEditTime: 2022-02-27 18:54:46
 Description: 
     github: https://github.com/Redlnn/signin-image-generator
     edit by KOneLane (AGPL-3.0)
@@ -167,8 +167,8 @@ class Signin:
                 image_generator_path = os.path.dirname(__file__) + '/signinImageGenerator/main.py'
                 if os.path.exists(os.path.dirname(__file__) + '/signinImageGenerator/save_test.png'):
                     os.remove(os.path.dirname(__file__) + '/signinImageGenerator/save_test.png') # 已存在，则删除
-                    time.sleep(3)
-
+                    time.sleep(1)
+                self.signin_box['name'] = self.signin_box['name'].replace(' ','·')
                 print('运行路径为：',image_generator_path)
                 order = f"python {image_generator_path} \
                     --id={self.signin_box['id']} \
