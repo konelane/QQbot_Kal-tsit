@@ -2,7 +2,7 @@
 Author: KOneLane
 Date: 2021-08-27 17:28:01
 LastEditors: KOneLane
-LastEditTime: 2022-02-21 18:02:52
+LastEditTime: 2022-02-27 17:33:08
 Description: 
 version: V
 '''
@@ -25,10 +25,12 @@ class MessageProcesser:
         ,group
         ,member
     ) -> None:
-        try:
-            self.text = message.get(Plain)[0].text
-        except:
-            self.text = ''
+        # 将图片任务分离出去
+        # message = message.asDisplay()
+        # self.text = message.get(Plain)[0].text
+        
+        self.text = message.asDisplay()
+        # self.text = '' # 会导致图片也被识别成文字
         self.id = member.id
         self.msgout = {
             'id':self.id,
@@ -36,7 +38,8 @@ class MessageProcesser:
             'text_jieba':'',
             'group_id':group.id,
             'text_ori':self.text,                                # 21.11.26 添加复读打断功能时加入
-            'type':'group'                                       # 21.12.17 添加漂流瓶功能时加入
+            'type':'group',                                      # 21.12.17 添加漂流瓶功能时加入
+            'name':member.name,                                  # 22.02.26 添加签到功能时加入
             # 'pub_time':''
         }
         pass

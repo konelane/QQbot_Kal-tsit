@@ -8,24 +8,29 @@
 
 import os
 import random
-import requests
 import urllib
+
+import requests
 import story_xu as sx
+from database.kaltsitReply import *
 from graia.broadcast.utilles import printer
 
 import function.squads_init as si
+from function.adventure import TerraRogue
 from function.CardSearch import CardSearch
 from function.couplet import couplet_api
 from function.ForcastForTricks import ForcastForTricks
-from function.adventure import TerraRogue
 from function.prts import Prts
+from function.Signin import Signin
 from function.StarCraftPVE import StarCraftPVE
 from function.twotwoorder import TwoTwoOrder
+
 # from function.Desk import kaltsitDesk
 
 # 不触发功能的账号
 blockID = [
-    '1982751087'
+    '1982751087', # 牛牛bot
+    '1102108096','543361022' # 是傻逼
 ]
 
 
@@ -42,47 +47,22 @@ class Monster3:
         self.text_list = msg_info['text_jieba']
         
         self.disappoint_text = [
-            '老女人','谜语人','谜语','鹰语','猞猁'
+            '老女人','谜语人','谜语','鹰语','猞猁','老妪'
         ]
         self.meaning_less_text = [
-            '好耶','哈哈哈哈哈','打牌','黑暗决斗' # 慎重添加出警词汇
+            '好耶','哈哈哈哈哈哈哈','打牌','黑暗决斗' # 慎重添加出警词汇
         ]
 
         pass
 
     def __disappoint(self):
         """检查是否满足失望词"""
-        repeat_words = [
-            '博士，我原谅你的冒失，给你一次重新组织语言的机会。',
-            '岁月与我，是相对静止的，不知你能否理解。',
-            '夕惕若厉，则无咎矣。',
-            '说出这种话来，博士大概需要恢复理智。',
-            'M3，安静。',
-            'M3，之后再亲近博士。',
-            '博士，我听说古老的萨卡兹有一种将罪徒撕碎的刑罚。',
-            '刚刚博士是不是说了什么，M3？',
-            '————ξ( ✿＞_❛)✧!',
-            '比起吐槽我，刚刚W笑了，你不打算处理一下吗？',
-            '……'
-        ]
-        return random.sample(repeat_words,1)[0]
+        
+        return random.sample(disappoint_words,1)[0]
 
     def __meaning_less(self):
         """检查是否满足水群词"""
-        repeat_words = [
-            'M3: (意义不明的嘶吼)',
-            '进化的本质，人类的本质……',
-            '不要将时间浪费在娱乐身上。',
-            '虽然必要的休息是需要的，但你更需要专注于手上的任务。',
-            '不如，与我来一场轻松的轮抓放松一下？',
-            '一会打牌吗？下棋也行……我有点感兴趣博士平时的爱好。',
-            '听说陈干员有律师徽章，还有一家名为陈步堂的事务所，干员的副业真是丰富呢。',
-            '泰拉大地上的文明，有的传承已久，有的尚还年轻，但都并非一成不变。',
-            '无限的强大往往伴随着无穷的恐惧。',
-            '这里本让我想起安静的伊比利亚，多亏有你，博士。',
-            'Closure又给你推销理智恢复按摩仪了？看来有必要找她谈谈罗德岛商业拓展的方向了……'
-            
-        ]
+        
         return random.sample(repeat_words,1)[0]
 
 
@@ -112,7 +92,7 @@ class Monster3:
 class SweepSquad:
     """切分词检测库"""
     def __init__(self,msg_info) -> None:
-        """msg_info是三维字典"""
+        """msg_info是n维字典"""
         self.msg_info = msg_info
         self.id = msg_info['id']
         self.text_list = msg_info['text_split']
@@ -120,7 +100,7 @@ class SweepSquad:
 
 
         # 词语配置
-        self.repeat_mod = ['好耶']#['？','?','好耶']
+        self.repeat_mod = ['好耶','查杀','催更'] # 复读模块
         self.prts_text = ['#prts']
         self.praise_text = ['#praise']
         self.dnd_text = ['#读取','#初始化','#检定','#背包','#经验','.r']
@@ -131,13 +111,14 @@ class SweepSquad:
         self.adventure = ['#ad']
         self.starcraft = ['#sc']
         self.twotwo = ['22','#22']
+        self.signin = ['#打卡','#签到']
         # self.driftingBottle_text = ['#捞', '#投']
 
         pass
 
     def checkWords(self):
         """功能核心激活函数"""
-        if self.id in blockID:
+        if str(self.id) in blockID:
             return None, None
         
         
@@ -168,6 +149,8 @@ class SweepSquad:
             return self.__starcraft(), None
         elif self.text_list[0] in self.twotwo:
             return self.__twotwoorder(), 'local_picture'
+        elif self.text_list[0] in self.signin:
+            return self.__signinImage(), 'local_picture2'
         # elif self.text_list[0] in self.driftingBottle_text:
         #     return self.__driftingBottle(), None
 
@@ -374,19 +357,22 @@ class SweepSquad:
             return temp.checkOrder() # 图片地址
         
 
-
-    # def __driftingBottle(self):
-    #     if self.text_list[0] not in self.driftingBottle_text:
-    #         return 
-    #     else:
-    #         if self.text_list[1] == '#捞':
-    #             texttemp = ' '.join(x for x in self.text_list[1::])
-    #             temp = kaltsitDesk(texttemp, 'group')
-    #             out_text = temp.kaltsitDeskApi()
-    #         elif self.text_list[1] == '#投':
-    #             texttemp = ' '.join(x for x in self.text_list[1::])
-    #             temp = kaltsitDesk(texttemp, 'person') # 也能投，手动标识
-    #         return out_text
+    def __signinImage(self):
+        """打卡签到"""
+        
+        if self.text_list[0] not in ['#打卡','#签到']:
+            return 
+        else:
+            temp = Signin(self.msg_info)
+            outtext = temp.signinAction()
+            # print(outtext)
+            if (outtext is not None) and (outtext != ''):
+                return (os.path.dirname(__file__) + '/signinImageGenerator/save_test.png', random.sample(signsuccesstext,1)[0]) # 之后可以加上随机生成
+            elif outtext == '':
+                return ('', random.sample(signinfailtext,1)[0])
+            
+            else:
+                return ('', '出错了')
 
 
 
@@ -395,21 +381,6 @@ class SecretaryKaltsit:
     def __init__(self) -> None:
         pass
 
-
-
-    # def check_words(self):
-    #     """核心功能/暴露接口"""
-    #     a = self.__repeat()
-    #     b = self.__prts()
-    #     output_words = []
-    #     if a:
-    #         output_words.append(a)
-    #     if b:
-    #         output_words.append(b)    
-    #     # if len(b)!=0:
-    #     #     output_words.append(self.__w_cos())
-        
-    #     return ''.join(x for x in output_words)
 
 
 if __name__ == "__main__":

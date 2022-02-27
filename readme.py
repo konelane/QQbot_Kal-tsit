@@ -2,7 +2,7 @@
 Author: KOneLane
 Date: 2021-05-13 14:47:36
 LastEditors: KOneLane
-LastEditTime: 2022-02-23 02:15:42
+LastEditTime: 2022-02-27 18:07:08
 Description: 
 version: V
 '''
@@ -10,10 +10,10 @@ version: V
 # coding:utf-8
 
 ######### Readme Document #########
-### arknights homework bot V2.4 ###
+### arknights homework bot V3.1 ###
 ###      Author: KOneLane       ###
 ###    Engine&Support: Mirai    ###
-###   Latest Update: 21.11.26   ###
+###   Latest Update: 22.02.27   ###
 
 
 print("博士，你好，我是Kal'tsit")
@@ -51,7 +51,7 @@ print('别紧张，我只是碰巧路过你的办公室。')
 # print('【地图】输入#地图 龙门 500【500表示显示周围500范围】')
 # print('--------cos干员--------')
 # print('权限系统、爬虫性能优化、建立数据库')
-print('-----最新更新于220223-----')
+print('-----最新更新于22.02.27-----')
 # print('项目地址:https://github.com/konelane/QQbot_Kal-tsit')
 # print('权限系统【已配置未实装】、爬虫性能优化【done！】')
 print('功能查询https://konelane.github.io/QQbot_Kal-tsit/#/')
