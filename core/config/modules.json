@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "globalDisabledModules": [],
+  "disabledGroups": {
+    "BotManage": [
+      123456789,
+      123456780
+    ],
+    "Sweep":[
+      1234568
+    ],
+    "StopRepeat":[
+      362165038
+    ]
+
+  }
+}

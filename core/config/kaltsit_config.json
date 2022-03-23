@@ -1,0 +1,14 @@
+{
+  "botName": "kaltsit",
+  "logChat": false,
+  "console": false,
+  "debug": false,
+  "databaseUrl": "C:/Users/Administrator/bot/database/Kal-tsit.db",
+  "admin": {
+    "masterId": 2238701273,
+    "masterName": "KOneLane",
+    "admins": [
+      2238701273
+    ]
+  }
+}

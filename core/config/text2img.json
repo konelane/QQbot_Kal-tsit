@@ -1,0 +1,17 @@
+{
+  "FontName": "OPPOSans-B.ttf",
+  "TTCIndex": 1,
+  "FontSize": 50,
+  "FontColor": "#645647",
+  "LineSpace": 30,
+  "TextMargin": 80,
+  "CharsPerLine": 25,
+  "BackgroundColor": "#DBE96E",
+  "BorderSideMargin": 50,
+  "BorderTopMargin": 70,
+  "BorderBottomMargin": 250,
+  "BorderInterval": 5,
+  "BorderSquareWrapWidth": 5,
+  "BorderOutlineColor": "#e9e5d9",
+  "BorderOutlineWidth": 5
+}
