@@ -37,6 +37,7 @@ with saya.module_context():
     saya.require("modules.Nudge")
     saya.require("modules.ForcastForTricks")
     saya.require("modules.HusGet")
+    saya.require("modules.Gacha")
 
 
 app.launch_blocking()

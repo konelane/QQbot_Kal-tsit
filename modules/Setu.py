@@ -103,7 +103,7 @@ class SigninClass:
 
 
     def setuAction(self):
-        """贴贴功能入口"""
+        """setu功能入口"""
         if self.signin_box['text_ori'] in ["#draw"]:
             # 1.查询信用值
             dict_of_text = self.__searchSigninData()

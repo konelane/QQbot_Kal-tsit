@@ -42,8 +42,8 @@ async def Praise(
 ):
     
     outtext = "博士，你好，我是Kal'tsit\n别紧张，我只是碰巧路过你的办公室。\n"
-    outtext += '--最新更新于 22.03.21--\n'
-    outtext += '功能查询https://konelane.github.io/QQbot_Kal-tsit/#/Guide'
+    outtext += '--最新更新于 22.05.21--\n'
+    outtext += '功能查询https://konelane.github.io/Docs_of_Kal-tsit/'
 
     await app.sendGroupMessage(group, MessageChain.create(
         Plain(outtext)
