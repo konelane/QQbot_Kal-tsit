@@ -1,0 +1,49 @@
+{
+    "group_id":114514,                                             
+    "mode_list":["mode_name1", "mode_name2"],                      
+    "story_node_list":["story_node_id1", "story_node_id2"],        
+    "credit_pool":1919,                                             
+    "is_end":0,                                                    
+    "endding_id":-1,                                               
+    "doctor_condition":{                                            
+        "hp" : 0,
+        "coc5":{
+            "str":60,  
+            "dex":60, 
+            "pow":60,  
+            "con":60, 
+            "app":60  
+        },
+        "bag" : ["origin_cash"],
+        "bag_dict":{
+            "origin_cash":{             
+                "name":"精炼源石锭",    
+                "amt":0,               
+                "type":"consumption"   
+            } 
+        },
+        "friends": [],
+        "friends_dict":{
+            "kaltsit":{
+                "reliance":0,           
+                "anger":0,              
+                "san_point":100,       
+                "position":"medician"  
+            }
+        },
+        "kaltsit_anger": 0
+    }, 
+    "game_environment":{                                            
+        "game_time":"18:00"                                         
+    },
+
+    "story_node_dict":{
+
+        "story_node_id1":{
+            "略 见上文":0
+        },
+        "story_node_id2":{
+            "略 见上文":0
+        }
+    }
+}

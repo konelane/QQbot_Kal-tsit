@@ -1,7 +1,7 @@
 import random
 from os.path import basename
 
-from core.decos import check_group, check_member, DisableModule
+from core.decos import check_group, check_member, DisableModule, check_permitGroup
 from core.ModuleRegister import Module
 from core.MessageProcesser import MessageProcesser
 from database.kaltsitReply import disappoint_words, repeat_words, blockList
@@ -83,7 +83,7 @@ class Sweep:
         inline_dispatchers=[Twilight([
             RegexMatch('.*老女人|.*谜语|.*鹰语|.*猞猁|.*老妪|.*老太婆|.*哈哈哈哈哈哈哈|.*打牌|.*黑暗决斗')                                 # ,'谜语',
         ])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name), check_permitGroup(blockList.permitGroup)],
     )
 )
 async def SweepSquad(
@@ -106,24 +106,24 @@ async def SweepSquad(
         ]))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([
-            RegexMatch(r'好耶')                                 
-        ])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
-    )
-)
-async def Repeat(
-    app: Ariadne, 
-    group: Group, 
-    message: MessageChain,
-    member: Member
-):
-    slightly_inittext = MessageProcesser(message, group, member)
-    msg_info_dict = slightly_inittext.text_processer()
-    if msg_info_dict['text_ori'] == '好耶':
-        await app.sendGroupMessage(group, MessageChain.create([
-            Plain('好耶')
-        ]))
+# @channel.use(
+#     ListenerSchema(
+#         listening_events=[GroupMessage],
+#         inline_dispatchers=[Twilight([
+#             RegexMatch(r'好耶')                                 
+#         ])],
+#         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name), check_permitGroup(blockList.permitGroup)],
+#     )
+# )
+# async def Repeat(
+#     app: Ariadne, 
+#     group: Group, 
+#     message: MessageChain,
+#     member: Member
+# ):
+#     slightly_inittext = MessageProcesser(message, group, member)
+#     msg_info_dict = slightly_inittext.text_processer()
+#     if msg_info_dict['text_ori'] == '好耶':
+#         await app.sendGroupMessage(group, MessageChain.create([
+#             Plain('好耶')
+#         ]))

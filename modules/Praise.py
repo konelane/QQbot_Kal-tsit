@@ -3,7 +3,7 @@
 import random
 from os.path import basename
 
-from core.decos import check_group, check_member, DisableModule
+from core.decos import check_group, check_member, DisableModule, check_permitGroup
 from core.ModuleRegister import Module
 from database.kaltsitReply import blockList
 
@@ -369,7 +369,7 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#praise')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def Praise(

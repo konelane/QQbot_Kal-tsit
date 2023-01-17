@@ -7,7 +7,7 @@ from os.path import basename
 from uuid import uuid4
 import time
 
-from core.decos import DisableModule, check_group, check_member
+from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
 from database.kaltsitReply import blockList, text_table
@@ -122,6 +122,23 @@ class SigninClass:
                 return '博士，信用不足，无法看图。'
 
 
+    def kalStep(self):
+        '''指令 #踩我'''
+        if self.signin_box['text_ori'] in ["#踩我"]:
+            # 1.查询信用值
+            dict_of_text = self.__searchSigninData()
+            if dict_of_text is not None:
+                """根据查询得到的字典更新数据"""
+                self.signin_box.update(dict_of_text)
+            else:
+                return ''
+
+            # 2.向DarkTemple返回指令
+            if self.signin_box['reliance'] >= 50:
+                
+                return 'step'
+            else:
+                return 'kill'
 
 
 
@@ -129,7 +146,7 @@ class SigninClass:
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#draw')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def Setu_time(
@@ -152,6 +169,56 @@ async def Setu_time(
                 Plain(random.sample(text_table,1)[0]),
                 Image(url = link)
             ]))
+        elif outtext == '':
+            await app.sendGroupMessage(group, MessageChain.create([
+                Plain('这里没有给你的东西，去打卡上班。')
+            ]))
+
+        else:
+            await app.sendGroupMessage(group, MessageChain.create([
+                Plain(outtext)
+            ]))
+    
+
+
+@channel.use(
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight([RegexMatch(r'#踩我')])],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
+    )
+)
+async def Step_me(
+    app: Ariadne, 
+    group: Group, 
+    message: MessageChain,
+    member: Member
+):
+    slightly_inittext = MessageProcesser(message, group, member)
+    msg_info_dict = slightly_inittext.text_processer()   
+
+    if msg_info_dict['text_split'][0] not in ['#踩我']:
+        return 
+    else:
+        temp = SigninClass(msg_info_dict)
+        outtext = temp.kalStep()
+        if outtext == 'step':
+            pic_num = random.randint(0,1)
+            if pic_num == 0:
+                # cai
+                await app.sendGroupMessage(group, MessageChain.create([
+                    Image(path='C:/Users/Administrator/bot/database/kalpics/cai.jpg')
+                ]))
+            elif pic_num == 1:
+                # ding
+                await app.sendGroupMessage(group, MessageChain.create([
+                    Image(path='C:/Users/Administrator/bot/database/kalpics/ding.jpg')
+                ]))
+        elif outtext == 'kill':
+            await app.sendGroupMessage(group, MessageChain.create([
+                Image(path='C:/Users/Administrator/bot/database/kalpics/kill.jpg')
+            ]))
+
         elif outtext == '':
             await app.sendGroupMessage(group, MessageChain.create([
                 Plain('这里没有给你的东西，去打卡上班。')

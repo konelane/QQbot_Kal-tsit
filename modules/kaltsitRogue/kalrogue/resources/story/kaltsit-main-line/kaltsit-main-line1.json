@@ -1,0 +1,38 @@
+{
+    
+    "kaltsit-main-line1":{
+        "node_id":"kaltsit-main-line1",                  
+        "node_info":{
+            "作者":"KOneLane",
+            "剧情":"测试用段落1",
+            "其他介绍":"写代码和注释累死了 按照格式增补吧"
+        },
+        "choice_made":[],                               
+        "node_type":"dice",                           
+        "story_text_file_name":"kaltsit-main-line1",      
+        "choice_maker":-1,                               
+        "position_save":0,                              
+        "node_amount":2,                                
+        "is_done":0,                                    
+        "game_time_pass":"7:00",                       
+        "dice_position_list":[1],                     
+        "dice_position":{                              
+            "1":["1, 100, 0", "kaltsit-main-line1-1", "node_name"]                           
+        }, 
+        "choice_position_list":[],                     
+        "choice_position":{                               
+        },                                             
+        "dice_result":{},                              
+        "choice_result":-1,                              
+        "next_node_id":"kaltsit-main-line1-2",             
+        "rqmt_node_list":["100","1"],                     
+        "rqmt_node_dict":{                             
+            "100":["amiya", "operator","lock","最后一格是解释内容 本行指在1号格处需要带有阿米娅干员才能通过，否则后续节点上锁"],           
+            "1":["60", "dice", "kaltsit-main-line1-1","本行指在2号格处需要掷骰，按上面dice_position处，骰子为1d100+0，点数大于60时继续进行，否则进入节点kaltsit-main-line1-2"]  
+        },                                              
+        "rqmt_got_list":[0, 0, 0],                         
+        "reward_list":[],                            
+        "reward":{                                       
+        }
+    }
+}

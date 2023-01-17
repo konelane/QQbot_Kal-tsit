@@ -1,0 +1,35 @@
+{
+    
+    "return-home":{
+        "node_id":"return-home",                  
+        "node_info":{
+            "作者":"KOneLane",
+            "剧情":"返回home节点",
+            "其他介绍":"通用节点模板"
+        },
+        "choice_made":[],                               
+        "node_type":"autotext",                           
+        "story_text_file_name":"kaltsit-main-line1",      
+        "choice_maker":-1,                               
+        "position_save":0,                              
+        "node_amount":1,                                
+        "is_done":0,                                    
+        "game_time_pass":"7:00",                       
+        "dice_position_list":[],                     
+        "dice_position":{                              
+        }, 
+        "choice_position_list":[],                     
+        "choice_position":{                               
+        },                                             
+        "dice_result":{},                              
+        "choice_result":-1,                              
+        "next_node_id":"home-intro",             
+        "rqmt_node_list":[],                     
+        "rqmt_node_dict":{                             
+        },                                              
+        "rqmt_got_list":[],                         
+        "reward_list":[],                            
+        "reward":{                                       
+        }
+    }
+}

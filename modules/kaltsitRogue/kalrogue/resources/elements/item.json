@@ -1,0 +1,23 @@
+{
+    "item_list":["cashOriginBlock","Mon3tr", "kaltsit-coffee-cup"],
+    "item":
+    {
+        "cashOriginBlock":{
+            "name":"精炼源石锭",
+            "type":"money"           
+            
+            
+        },
+        
+        "Mon3tr":{
+            "name":"Mon3tr",
+            "type":"pet"
+        },
+
+        "kaltsit-coffee-cup":{
+            "name":"凯尔希的咖啡杯",
+            "type":"keyitem"
+        }
+
+    }
+}

@@ -6,7 +6,7 @@ import random
 import sqlite3
 from os.path import basename
 
-from core.decos import DisableModule, check_group, check_member
+from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
 from database.kaltsitReply import blockList
@@ -36,7 +36,7 @@ Module(
 class CardSearch:
     def __init__(self,card_name):
         self.name = card_name
-        self.filename = './bot/database/' # 初始化权限文件路径
+        self.filename = './bot/database/cards/' # 初始化权限文件路径
         self.cardTextHeader = [
             'id','name','desc'
         ] # 整张表的表头
@@ -51,7 +51,8 @@ class CardSearch:
 
     def __connectSqlite(self):
         """连接数据库"""
-        con = sqlite3.connect(self.filename + 'Kal-tsit.db')
+        con = sqlite3.connect(self.filename + 'cards.db')
+        # con = sqlite3.connect('D:/pythondir/bot/database/' + 'Kal-tsit.db')
         cur = con.cursor()
         return (con,cur)
 
@@ -60,18 +61,36 @@ class CardSearch:
         cur = con.cursor()
 
         try:
-            cur.execute("SELECT * FROM cardTexts WHERE name = ?",(self.name,))
+            cur.execute("SELECT * FROM texts WHERE name = ?",(self.name,))
             test = list(cur.fetchall()[0])
             dict_of_text = dict(zip(self.cardTextHeader,test))
 
-            cur.execute("SELECT * FROM cardDatas WHERE id = ?",(dict_of_text['id'],))
+            cur.execute("SELECT * FROM datas WHERE id = ?",(dict_of_text['id'],))
             test = list(cur.fetchall()[0])
             dict_of_text.update(dict(zip(self.cardDatasHeader,test)))
             print(dict_of_text)
             return dict_of_text
         except:
-            print(self.name)
-            return 'error'
+            # 尝试模糊搜索
+            print('尝试模糊搜索')
+            try:
+                exec_line = f"SELECT * FROM texts WHERE (name LIKE '%{self.name}%')"
+                cur.execute(exec_line)
+                test = list(cur.fetchall()[0])
+                dict_of_text = dict(zip(self.cardTextHeader,test))
+
+                cur.execute("SELECT * FROM datas WHERE id = ?",(dict_of_text['id'],))
+                test = list(cur.fetchall()[0])
+                dict_of_text.update(dict(zip(self.cardDatasHeader,test)))
+                if dict_of_text is not None:
+                    print(dict_of_text)
+                    return dict_of_text
+                else:
+                    print(self.name)
+                    return 'error'
+            except:
+                print(self.name)
+                return 'error'
 
     def cardTextReturn(self):
         msg_dict = self.__searchCard() # 拿到数据字典
@@ -155,7 +174,7 @@ class StarCraftPVE:
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#查卡')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def YGOsearch(
@@ -185,7 +204,7 @@ async def YGOsearch(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#sc')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def StarcraftPVE(
@@ -212,3 +231,16 @@ async def StarcraftPVE(
         await app.sendGroupMessage(group, MessageChain.create([
             Plain(out_text)
         ]))
+
+
+# if __name__ =='__main__':
+#     msg_info_dict = {
+#         'text_split':['#查卡','伽马暴']
+#     }
+#     if msg_info_dict['text_split'][0] != '#查卡':
+#         pass
+#     else:
+#         textall = ' '.join([x for x in msg_info_dict['text_split'][1::]]) # 空格连接
+#         temp = CardSearch(textall)
+#         out_text = temp.cardTextReturn()
+#         print(out_text)

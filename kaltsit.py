@@ -11,9 +11,9 @@ bcc = Broadcast(loop=loop)
 app = Ariadne(
     broadcast=bcc,
     connect_info=MiraiSession(
-        host="http://localhost:8080",
-        verify_key="yourAutherKey",
-        account=123456789,
+        host="http://localhost:8082",
+        verify_key="KOneLaneKaltsit",
+        account=591016144,  # 2256896694
     ),
 )
 saya = Saya(bcc)
@@ -29,7 +29,7 @@ with saya.module_context():
     saya.require("modules.FourMemberTeam")
     saya.require("modules.StoryDice")
     saya.require("modules.DatabaseSearch")
-    saya.require("modules.StopRepeat")
+    # saya.require("modules.StopRepeat")
     saya.require("modules.Setu")
     saya.require("modules.Prts")
     saya.require("modules.Couplet")
@@ -38,6 +38,10 @@ with saya.module_context():
     saya.require("modules.ForcastForTricks")
     saya.require("modules.HusGet")
     saya.require("modules.Gacha")
-
+    saya.require("modules.AkGuess")
+    saya.require("modules.KHeart")
+    # saya.require("modules.DiceKaltsit")
+    saya.require("modules.kaltsitRogue")
+    saya.require("modules.Train")
 
 app.launch_blocking()

@@ -1,0 +1,30 @@
+{
+    "operator_list":["kaltsit", "amiya"],
+    "position_list":[
+        "MEDIC", "CASTER", "WARRIOR", "TANK", "SUPPORT", "SNIPER", "PIONEER", "SPECIAL"
+    ],
+    "operator":
+    {
+        "kaltsit":{
+            "name":"凯尔希",
+            "reliance":0,           
+            "anger":0,              
+            "san_point":100,        
+            "position":"MEDIC",  
+            "item":["Mon3tr"],      
+            "item_dict":{
+                "Mon3tr":{}        
+            }
+            
+        },
+        
+        "amiya":{
+            "name":"阿米娅",
+            "reliance":0,           
+            "anger":0,              
+            "san_point":100,
+            "position":"CASTER"
+        }
+
+    }
+}

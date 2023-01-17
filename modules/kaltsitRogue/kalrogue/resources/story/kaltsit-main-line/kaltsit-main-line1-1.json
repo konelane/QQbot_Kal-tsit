@@ -1,0 +1,37 @@
+{
+    
+    "kaltsit-main-line1-1":{
+        "node_id":"kaltsit-main-line1-1",                  
+        "node_info":{
+            "作者":"KOneLane",
+            "剧情":"测试用段落1-1",
+            "其他介绍":"写代码和注释累死了 按照格式增补吧"
+        },
+        "choice_made":[],                               
+        "node_type":"endding",                           
+        "story_text_file_name":"kaltsit-main-line1-1",      
+        "choice_maker":-1,                               
+        "position_save":0,                              
+        "node_amount":1,                                
+        "is_done":0,                                    
+        "game_time_pass":"7:00",                       
+        "dice_position_list":[],                     
+        "dice_position":{                               
+        },  
+        "choice_position_list":[],                     
+        "choice_position":{                               
+        },                                             
+        "dice_result":[],                              
+        "choice_result":-1,                              
+        "next_node_id":null,             
+        "rqmt_node_list":[],                     
+        "rqmt_node_dict":{                 
+
+        },                                              
+        "rqmt_got_list":[],                         
+        "reward_list":["1"],                            
+        "reward":{                                      
+            "1":["end_test","endding","finish_step","奖励 通关结局是endding，结局编号end_test"]
+        }
+    }
+}

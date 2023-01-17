@@ -10,7 +10,7 @@ from graia.broadcast.builtin.decorators import Depend
 from graia.broadcast.entities.event import Dispatchable
 from graia.broadcast.exceptions import ExecutionStop
 
-from config.BotConfig import modules_cfg
+from core.config.BotConfig import modules_cfg
 
 # from core.MessageProcesser import MessageProcesser
 
@@ -32,6 +32,13 @@ def check_member(*members):
             # await app.sendGroupMessage(group, MessageChain.create(At(member.id), "对不起，您的权限并不够"))
             raise ExecutionStop
     return Depend(check_member_deco)
+
+def check_permitGroup(*groups):
+    async def check_permitGroup_deco(app: Ariadne, group: Group):
+        if group.id not in groups[0]:
+            print('[INFO]权限不足-群组未授权')
+            raise ExecutionStop
+    return Depend(check_permitGroup_deco)
 
 # 文本检查装饰器
 def check_plain(*message):

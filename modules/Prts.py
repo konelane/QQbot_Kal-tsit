@@ -7,7 +7,7 @@ from os.path import basename
 
 import requests
 from bs4 import BeautifulSoup as bs
-from core.decos import DisableModule, check_group, check_member
+from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
 from core.Text2Img import generate_img
@@ -168,12 +168,102 @@ class Prts:
             return (f"今天过生日的干员是{name_birth}")
 
 
+    def ModuleSearch(self):
+        """
+        模组
+        """
+        url = f"https://prts.wiki/w/{self.name}#模组" # https://prts.wiki/w/干员名#模组
+        page = requests.get(url)
+        soup = bs(page.content, 'html.parser')
+        soup_list = soup.find_all("", class_="wikitable nodesktop")
+
+
+        def textDealer(textIn):
+            textOut = re.sub('\n<td colspan="3">', "", textIn)
+            textOut = re.sub(' <span style="color:#00B0FF;">', "", textOut)
+            textOut = re.sub('<span style="color:#00B0FF;">', "", textOut)
+            textOut = re.sub('</span>\n</td></tr>\n<tr>\n', "", textOut)
+            
+            textOut = re.sub('<div style="zoom:70%;display:inline-block;"><svg style="vertical-align:top;width:130px;height:78px;width:!important;height:!important" viewbox="0 0 130 78" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><rect fill="#27a6f3" height="22" id="1" width="22"></rect><rect fill="none" height="20" id="2" stroke="gray" stroke-width="2" width="20"></rect></defs><use x="2" xlink:href="#2" y="2"></use><use x="28" xlink:href="#2" y="2"></use><use x="54" xlink:href="#2" y="2"></use><use x="80" xlink:href="#2" y="2"></use><use x="2" xlink:href="#2" y="28"></use><use x="27" xlink:href="#1" y="27"></use><use x="54" xlink:href="#2" y="28"></use><use x="80" xlink:href="#2" y="28"></use><use x="106" xlink:href="#2" y="28"></use><use x="2" xlink:href="#2" y="54"></use><use x="28" xlink:href="#2" y="54"></use><use x="54" xlink:href="#2" y="54"></use><use x="80" xlink:href="#2" y="54"></use></svg></div>', '', textOut)
+            textOut = re.sub('\n</td></tr>\n<tr><i class="fa-plus-circle fas" style="font-size:;height:;color:;"></i>', "\n",textOut)
+            textOut = re.sub('<tr><i class="fa-chevron-circle-up fas" style="font-size:;height:;color:;"></i>', ' *', textOut)
+            textOut = re.sub('<span style="color: #FF6237;"><i class="fa- fas" style="font-size:;height:;color:;"></i>', ' & ', textOut)
+            textOut = re.sub('<span style="color: #0098DC;"><i class="fa-arrow-alt-circle-up fas" style="font-size:;height:;color:;"></i>', '', textOut)
+            textOut = re.sub('<span style="color: #0098DC;"><i class="fa-arrow-alt-circle-down fas" style="font-size:;height:;color:;"></i>', '', textOut)
+            textOut = re.sub('<span data-size="350" style="display:none">', '', textOut)
+            textOut = re.sub('<span class="mc-tooltips"><span class="term" style="text-decoration:underline #222;white-space:nowrap;text-shadow: 0 0 1px;">', '', textOut)
+            textOut = re.sub('<span style="color:#0098DC;">', "",textOut)
+            textOut = re.sub('"4"><i class="fa-chevron-right fas" style="font-size:;height:;color:;"></i> ', " *",textOut)
+            
+            
+            textOut = re.sub(r'<a class="mw-redirect" href="/w/[A-Z]{0,1}[0-9]{1,2}-[0-9]{1,2}" "[A-Z]{0,1}[0-9]{1,2}-[0-9]{1,2}">', "",textOut)
+            textOut = re.sub('<td colspan=', "",textOut)
+            textOut = re.sub('</span>\xa0', "",textOut)
+            textOut = re.sub('</td></tr>', "",textOut)
+            textOut = re.sub('</span>', "",textOut)
+            textOut = re.sub('\xa0', "",textOut)
+            textOut = re.sub('<tr>', "",textOut)
+            textOut = re.sub('<br/>', ":",textOut)
+            textOut = re.sub('<b>', "",textOut)
+            textOut = re.sub('</b>', "", textOut)
+            textOut = re.sub('</a>', "", textOut)
+            textOut = re.sub('\n', "",textOut)
+            
+            return textOut
+
+        def metarialTextDealer(textIn):
+            return textIn.split(';">')[1].split('</span></div>')[0]
+            
+
+        abc = re.split('title=|<th colspan="1">|<th colspan="2">|<th colspan="4">|<th rowspan="2">|<th rowspan="3">|><img alt=|<th>|\n</th></tr>\n<tr>\n<td colspan=|</th>', str(soup_list[0]))
+        if soup_list == []:  return ''
+        module_dict = {
+            'name': abc[2].split(' <span class="mc-tooltips">')[0],
+            'effect_lv1': textDealer(abc[6]),
+            'effect_lv2': textDealer(abc[8]),
+            'effect_lv3': textDealer(abc[10]),
+            'unlock_task': textDealer(abc[12] + abc[13]),
+            'unlock_metarial':  textDealer(
+                abc[16]+':'+metarialTextDealer(abc[17])+';'+
+                abc[18]+':'+metarialTextDealer(abc[19])+';'+
+                abc[20]+':'+metarialTextDealer(abc[21])
+            ),
+            'levelup1_metarial': textDealer(
+                abc[25]+':'+metarialTextDealer(abc[26])+';'+
+                abc[27]+':'+metarialTextDealer(abc[28])+';'+
+                abc[29]+':'+metarialTextDealer(abc[30])+';'+
+                abc[31]+':'+metarialTextDealer(abc[32])
+            ),
+            'levelup2_metarial': textDealer(
+                abc[34]+':'+metarialTextDealer(abc[35])+';'+
+                abc[36]+':'+metarialTextDealer(abc[37])+';'+
+                abc[38]+':'+metarialTextDealer(abc[39])+';'+
+                abc[40]+':'+metarialTextDealer(abc[41])
+            ),
+        }
+        outtext = ''
+        zh_dict = {
+            'name': '【模组名称】',
+            'effect_lv1': '【模组lv1】',
+            'effect_lv2': '【模组lv2】',
+            'effect_lv3': '【模组lv3】',
+            'unlock_task': '【解锁任务】',
+            'unlock_metarial':  '【解锁材料】',
+            'levelup1_metarial': '【升级材料1】',
+            'levelup2_metarial': '【升级材料2】',
+        }
+
+        for key,val in (module_dict.items()):
+            outtext += zh_dict[key] + val + '\n'
+
+        return outtext
+
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#prts ')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def Prts_app(
@@ -184,7 +274,7 @@ async def Prts_app(
 ):
     pass    
     """prts查询功能"""
-    prts_mod = ['技能专精','晋升材料','属性','后勤','生日','今日生日']
+    prts_mod = ['技能专精','晋升材料','属性','后勤','生日','今日生日','模组']
     exception_squad = ['凯尔希']
 
     slightly_inittext = MessageProcesser(message,group,member)
@@ -215,11 +305,14 @@ async def Prts_app(
             out_list = '这位干员的生日是' + prts_1.BirthdayGet()
         if text_list[2] == '今日生日':
             out_list = prts_1.TodayBirthday()
-
-        generate_img([''.join(x for x in out_list)]) 
-        img_name = 'bot/database/temp_prts.jpg'  # 自定义临时文件的保存名称
-        img_path = os.path.join(img_name)
-        await app.sendGroupMessage(group, MessageChain.create(
-            Plain(random.sample(text_table,1)[0]),
-            Image(path=img_path)
-        ))
+        if text_list[2] == '模组':
+            out_list = prts_1.ModuleSearch()
+        # 模组系统
+        if out_list != '' and out_list != []:
+            generate_img([''.join(x for x in out_list)]) 
+            img_name = 'bot/database/temp_prts.jpg'  # 自定义临时文件的保存名称
+            img_path = os.path.join(img_name)
+            await app.sendGroupMessage(group, MessageChain.create(
+                Plain(random.sample(text_table,1)[0]),
+                Image(path=img_path)
+            ))

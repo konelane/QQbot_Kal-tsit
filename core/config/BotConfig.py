@@ -60,26 +60,28 @@ class RConfig(BaseModel):
 
 
 class MAHConfig(RConfig):
-    account: int
-    host: AnyHttpUrl = 'http://localhost:8080'
-    verifyKey: str
+    account: int = 1234512345#  bot账号
+    host: AnyHttpUrl = 'http://localhost:端口号'
+    verifyKey: str = ''
 
 
 class AdminConfig(RConfig):
-    masterId: int = 2238701273  # 机器人主人的QQ号
-    masterName: str = 'KOneLane'
-    admins: list = [2238701273]
+    masterId: int = 114514  # 机器人主人的QQ号
+    masterName: str = '1919810'
+    admins: list = [114514]
 
 
 class BasicConfig(RConfig):
-    __filename__: str = 'kaltsit_config'
-    botName: str = 'KaltsitBot'
+    __filename__: str = 'Filename'
+
+    botName: str = 'botName'
     logChat: bool = False
     console: bool = False
     debug: bool = False
-    databaseUrl: str = 'C:/Users/Administrator/bot/database/Kal-tsit.db'
+    databaseUrl: str = '本地数据库地址'
     # mysql+asyncmy://user:pass@hostname/dbname?charset=utf8mb4
     admin: AdminConfig = AdminConfig()
+    mah_cfg = MAHConfig()
 
 
 class ModulesConfig(RConfig):

@@ -2,7 +2,7 @@
 # coding:utf-8
 from os.path import basename
 
-from core.decos import check_group, check_member, DisableModule
+from core.decos import check_group, check_member, DisableModule, check_permitGroup
 from core.ModuleRegister import Module
 from database.kaltsitReply import blockList
 
@@ -33,7 +33,7 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#help')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def Praise(
@@ -42,8 +42,9 @@ async def Praise(
 ):
     
     outtext = "博士，你好，我是Kal'tsit\n别紧张，我只是碰巧路过你的办公室。\n"
-    outtext += '--最新更新于 22.05.21--\n'
-    outtext += '功能查询https://konelane.github.io/Docs_of_Kal-tsit/'
+    outtext += '--最新更新于 23.01.11--\n'
+    outtext += '功能查询https://konelane.github.io/Docs_of_Kal-tsit/\n\n'
+    outtext += '罗德岛午夜逸闻https://konelane.github.io/Docs_of_Kal-tsit/KaltsitRogue.html\n'
 
     await app.sendGroupMessage(group, MessageChain.create(
         Plain(outtext)

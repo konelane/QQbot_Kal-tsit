@@ -49,7 +49,7 @@ module_name = basename(__file__)[:-3]
 Module(
     name='BotManager',
     file_name=module_name,
-    author=['KOneLane'],
+    author=['name'],
     usage='[.!！]添加群白名单 [群号]\n[.!！]添加群黑名单 [群号]\n[.!！]添加用户黑名单 [QQ号]\n',
     can_disable=False,
 ).register()
@@ -270,7 +270,7 @@ async def join_group(app: Ariadne, event: BotJoinGroupEvent):
         MessageChain.create(
             # f'我是 {basic_cfg.admin.masterName} 的机器人 {basic_cfg.botName}\n'
             # f'如果有需要可以联系主人QQ『{basic_cfg.admin.masterId}』\n'
-            '拉进其他群前请先添加群聊607148401并说明用途，主人添加白名单后即可邀请\n'
+            '拉进其他群前请先添加群聊xxx并说明用途，主人添加白名单后即可邀请\n'
             '发送 #help 可以查看功能列表，请先阅读。\n管理员发送 #bot退群 可以使bot自动退群。'
         ),
     )

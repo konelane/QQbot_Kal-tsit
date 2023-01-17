@@ -5,10 +5,11 @@ import random
 from os.path import basename
 import os
 
-from core.decos import check_group, check_member, DisableModule
+from core.decos import check_group, check_member, DisableModule, check_permitGroup
 from core.ModuleRegister import Module
 from core.MessageProcesser import MessageProcesser
 from database.kaltsitReply import blockList
+
 
 from graia.ariadne.message.parser.twilight import RegexMatch
 from graia.ariadne.app import Ariadne
@@ -53,9 +54,13 @@ class StoryDice:
 
     @classmethod    
     def dice_basic(cls, msg_dict):
+        '''
+        @param
+            text_in : "1d100 + 7"
+        '''
         text_in = ' '.join(x for x in msg_dict['text_split'][1:])
         if 'd' not in text_in:
-            return ''
+            return '', 
         diff_dice = 0
         if '+' in text_in:
             text_dice = text_in.split('+')[0]
@@ -113,46 +118,13 @@ class StoryDice:
             return outtext
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'.r')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
-    )
-)
-async def Dice(
-    app: Ariadne, 
-    message: MessageChain,
-    group: Group,
-    member: Member 
-):
-    
-    slightly_inittext = MessageProcesser(message,group,member)
-    msg_info_dict = slightly_inittext.text_processer()
-    dice_tuple = StoryDice.dice_basic(msg_info_dict)
-    if dice_tuple[1] == 0:
-        dice_sum = sum(dice_tuple[0])
-        outtext = '你掷得的点数分别是：' + '+'.join(str(x) for x in dice_tuple[0]) + '。\n共计' + str(dice_sum) + '点。'
-        await app.sendGroupMessage(group, MessageChain.create(
-            At(member.id),
-            Plain(outtext)
-        ))
-    elif dice_tuple[1] != 0:
-        if abs(dice_tuple[1]) >= 10000:
-            dice_tuple[1] = 10000
-        dice_sum = sum(dice_tuple[0]) + dice_tuple[1]
-        outtext = '你掷得的点数分别是：' + '+'.join(str(x) for x in dice_tuple[0]) + '，以及额外的' + str(dice_tuple[1]) + '点。\n共计' + str(dice_sum) + '点。'
-        await app.sendGroupMessage(group, MessageChain.create(
-            At(member.id),
-            Plain(outtext)
-        ))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#s')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def StoryWrite(
@@ -170,3 +142,34 @@ async def StoryWrite(
                 Plain(outtext)
             ))
     
+
+
+@channel.use(
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight([RegexMatch(r'\.r|\#r')])],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
+    )
+)
+async def DiceOnly(
+    app: Ariadne, 
+    message: MessageChain,
+    group: Group,
+    member: Member 
+):
+    slightly_inittext = MessageProcesser(message,group,member)
+    msg_info_dict = slightly_inittext.text_processer()
+
+    if msg_info_dict['text_split'][0] not in ['#r','.r']:
+        return 
+    else:
+        out_put = StoryDice.dice_basic(msg_info_dict)
+        if out_put != '' and len(out_put)==2:
+            dice_sum = sum(out_put[0]) + out_put[1]
+            outtext = '骰子滚动后，你掷出了' + ','.join([str(x) for x in out_put[0]]) + '，以及额外的' +str(out_put[1])+  '点，共计' + str(dice_sum) + '点。'
+            # TODO 大失败
+            if sum(out_put[0]) <= 1:
+                outtext += '\n看来，泰拉不相信骰子呢。'
+            await app.sendGroupMessage(group, MessageChain.create(
+                Plain(outtext)
+            ))

@@ -1,0 +1,41 @@
+{
+    
+    "kaltsit-main-line1-2":{
+        "node_id":"kaltsit-main-line1-2",                  
+        "node_info":{
+            "作者":"KOneLane",
+            "剧情":"测试用段落1-2",
+            "其他介绍":"写代码和注释累死了 按照格式增补吧"
+        },
+        "choice_made":[],                               
+        "node_type":"choice",                           
+        "story_text_file_name":"kaltsit-main-line1-2",      
+        "choice_maker":-1,                               
+        "position_save":0,                              
+        "node_amount":2,                                
+        "is_done":0,                                    
+        "game_time_pass":"7:00",                       
+        "dice_position_list":[],                     
+        "dice_position":{                                 
+        }, 
+        "choice_position_list":[0],                     
+        "choice_position":{                               
+            "0":{
+                "0":["kaltsit-main-line1-1", "node_name", "", "0是不给"],
+                "1":["kaltsit-main-line-return-home", "node_name", "", "1是给"]
+            }
+        },                                             
+        "dice_result":[],                              
+        "choice_result":-1,                              
+        "next_node_id":"kaltsit-main-line-return-home",             
+        "rqmt_node_list":["0"],                     
+        "rqmt_node_dict":{                             
+            "0":["kaltsit-coffee-cup", "item", "give_out","give_out指需要【交出】道具item kaltsit-coffee-cup"]  
+        },                                              
+        "rqmt_got_list":[0],                         
+        "reward_list":["2"],                            
+        "reward":{                                      
+            "2":["kaltsit", "operator", "finish_step","最后一格是解释内容 这里指当finish_step阶段达成时，奖励名为kaltsit的operator"]    
+        }
+    }
+}

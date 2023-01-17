@@ -3,7 +3,7 @@
 import random
 from os.path import basename
 
-from core.decos import check_group, check_member, DisableModule
+from core.decos import check_group, check_member, DisableModule, check_permitGroup
 from core.ModuleRegister import Module
 from core.MessageProcesser import MessageProcesser
 from database.kaltsitReply import blockList
@@ -151,7 +151,7 @@ class Operator_rollbox:
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#hw')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def Dice(

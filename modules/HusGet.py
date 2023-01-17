@@ -5,7 +5,7 @@ import sqlite3
 from os.path import basename
 from uuid import uuid4
 
-from core.decos import DisableModule, check_group, check_member
+from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
 from database.kaltsitReply import blockList, text_table
@@ -58,7 +58,7 @@ class HusGet:
         ]
 
 
-    done_opt = ['银灰','赫拉格','异客','傀影','棘刺','极境','阿']
+    done_opt = ['银灰','赫拉格','异客','傀影','棘刺','极境','阿','灵知']
     husband_wife_dict = {
         
         '银灰':{
@@ -221,16 +221,21 @@ class HusGet:
             },
         },
 
-        '':{
-            'name':'',
+        '灵知':{
+            'name':'灵知',
             'level':'6',
-            'occu':'近卫',
+            'occu':'辅助',
             'location':'',
             # 'organization':'',
             'reply':{
-                0:'',
-                1:'',
-                2:'',
+                0:'嗯，这柄短剑是给你的博士，我借用了工坊，这里的技术值得我学习。',
+                0:'做错了就是做错了，多余的辩解只会徒增交流的成本。',
+                1:'博士想知道我的看法？这需要很长时间来解说，你有耐心听完吗？没别的意思，我只是确认一下。',
+                1:'我的个人情感在工作中没有那么重要。我也不想参与任何莫名其妙的“心理疏导会”……博士也同意吗？',
+                2:'博士，你也觉得我有些难以相处吗？这些，这些都增加了沟通的损耗，我会调整的。',
+                2:'嗯？问我以什么态度面对家乡？唔，我从来不考虑这些问题。只要做的事能够让那里好起来，其他就没那么重要了。',
+                2:'你把太多时间放在了与研究无关的杂务上，博士。身为研究者，你应该明白，这只会阻碍你前进的脚步。',
+                2:'看来你对自己身体的管理有所欠缺，博士。',
             },
         },
 
@@ -347,7 +352,7 @@ class HusGet:
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'#值班')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def Praise(

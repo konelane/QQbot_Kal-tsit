@@ -4,7 +4,7 @@ from datetime import datetime
 import sqlite3
 from os.path import basename
 
-from core.decos import DisableModule, check_group, check_member
+from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
 from database.kaltsitReply import blockList
@@ -122,7 +122,7 @@ class stopRepeatQueue:
     ListenerSchema(
         listening_events=[GroupMessage],
         # inline_dispatchers=[Twilight([RegexMatch(r'#sc')])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def StopRepeat_inGroup(
@@ -134,19 +134,19 @@ async def StopRepeat_inGroup(
     # 复读打断功能
     slightly_inittext = MessageProcesser(message, group, member)
     msg_info_dict = slightly_inittext.text_processer()   
-
-    test = stopRepeatQueue(msg_info_dict)
-    check_table_if_exist = test.checkTables() # 1和0
-    
-    if check_table_if_exist != 0:
-        # print(test.activeRun())
-        temp_text = test.activeRun()
-        if not temp_text:
-            pass
-        elif temp_text == '咳咳':
-            await app.sendGroupMessage(group, MessageChain.create([
-                Image(path = './bot/database/faces/stopRepeat.jpg')
-                # Image(url = 'https://m1.im5i.com/2021/11/19/Un5Qhf.jpg')
-            ]))
-    else:
-        test.databaseInit()
+    if msg_info_dict != '':
+        test = stopRepeatQueue(msg_info_dict)
+        check_table_if_exist = test.checkTables() # 1和0
+        
+        if check_table_if_exist != 0:
+            # print(test.activeRun())
+            temp_text = test.activeRun()
+            if not temp_text:
+                pass
+            elif temp_text == '咳咳':
+                await app.sendGroupMessage(group, MessageChain.create([
+                    Image(path = './bot/database/faces/stopRepeat.jpg')
+                    # Image(url = 'https://m1.im5i.com/2021/11/19/Un5Qhf.jpg')
+                ]))
+        else:
+            test.databaseInit()

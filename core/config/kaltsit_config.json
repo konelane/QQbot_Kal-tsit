@@ -1,14 +1,14 @@
 {
-  "botName": "kaltsit",
+  "botName": "botName",
   "logChat": false,
   "console": false,
   "debug": false,
-  "databaseUrl": "C:/Users/Administrator/bot/database/Kal-tsit.db",
+  "databaseUrl": "数据库db地址",
   "admin": {
-    "masterId": 123456789,
-    "masterName": "KOneLane",
+    "masterId": 114514,
+    "masterName": "114514",
     "admins": [
-      123456789
+      114514
     ]
   }
 }

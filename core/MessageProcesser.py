@@ -24,6 +24,9 @@ class MessageProcesser:
         pass
 
     def text_processer(self):
-        return self.msgout
+        if self.text in ['[图片]', '<! 不支持的消息类型 !>', '[APP消息]']:
+            return ''
+        else:
+            return self.msgout
 
 

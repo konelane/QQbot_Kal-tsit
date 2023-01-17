@@ -100,7 +100,9 @@ def async_generate_img(*args, **kwargs):
 def generate_img(
     text_and_img: list = None,  # list[str | bytes] | list[str] | list[bytes] | None
     config: Text2ImgConfig = Text2ImgConfig(),
-    font_path_folder = 'database/fonts'
+    img_path = os.path.join('bot/database/temp_prts.jpg'),
+    font_path_folder = 'database/fonts',
+    img_type = None
 ) -> bytes:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
@@ -117,14 +119,26 @@ def generate_img(
     elif not isinstance(text_and_img, list):
         raise ValueError('ArgumentError: 参数类型错误')
 
-    font_path = Path(root_path, font_path_folder, config.FontName)  # 字体文件的路径
-    if not font_path.exists():
-        raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{font_path}')
-    if len(config.FontName) <= 4 or config.FontName[-4:] not in ('.ttf', '.ttc', '.otf', '.otc'):
-        raise ValueError('所配置的字体文件名不正确，请检查配置文件')
-    font_path = str(font_path)
+    if img_type == 'forcast':
+        fontname = 'UbuntuMono-R.ttf' # 天气预报专用配置 - 等宽字体
+        font_path = Path(root_path, font_path_folder, fontname)  # 字体文件的路径
+        if not font_path.exists():
+            raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{font_path}')
+        if len(fontname) <= 4 or fontname[-4:] not in ('.ttf', '.ttc', '.otf', '.otc'):
+            raise ValueError('所配置的字体文件名不正确，请检查配置文件')
+        font_path = str(font_path)
 
-    is_ttc_font = True if config.FontName.endswith('.ttc') or config.FontName.endswith('.otc') else False
+        is_ttc_font = True if fontname.endswith('.ttc') or fontname.endswith('.otc') else False
+
+    else:
+        font_path = Path(root_path, font_path_folder, config.FontName)  # 字体文件的路径
+        if not font_path.exists():
+            raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{font_path}')
+        if len(config.FontName) <= 4 or config.FontName[-4:] not in ('.ttf', '.ttc', '.otf', '.otc'):
+            raise ValueError('所配置的字体文件名不正确，请检查配置文件')
+        font_path = str(font_path)
+
+        is_ttc_font = True if config.FontName.endswith('.ttc') or config.FontName.endswith('.otc') else False
 
     if is_ttc_font:
         font = ImageFont.truetype(font_path, size=config.FontSize, index=config.TTCIndex)  # 确定正文用的ttf字体
@@ -401,8 +415,8 @@ def generate_img(
     
 
     # 保存为jpg图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#jpeg
-    img_name = 'bot/database/temp_prts.jpg'  # 自定义临时文件的保存名称
-    img_path = os.path.join(img_name)  # 自定义临时文件保存路径
+    # img_name = 'bot/database/temp_prts.jpg'  # 自定义临时文件的保存名称
+    # img_path = os.path.join(img_name)  # 自定义临时文件保存路径
     print(img_path)
     canvas.save(
         img_path,

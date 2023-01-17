@@ -1,0 +1,39 @@
+{
+    
+    "home-intro":{
+        "node_id":"home-intro",                  
+        "node_info":{
+            "作者":"KOneLane",
+            "剧情":"测试用段落1",
+            "其他介绍":"所有故事的起点"
+        },
+        "choice_made":[],                               
+        "node_type":"choice",                           
+        "story_text_file_name":"home-intro",      
+        "choice_maker":-1,                               
+        "position_save":0,                              
+        "node_amount":2,                                
+        "is_done":0,                                    
+        "game_time_pass":"18:00",                       
+        "dice_position_list":[],                     
+        "dice_position":{                              
+            "-1":"1, 100, 0"                             
+        },                                              
+        "dice_result":{},  
+        "choice_position_list":[0],                     
+        "choice_position":{                              
+            "0":{
+                "0":["kaltsit-main-line1","node_name","","默认故事-基本故事 选择0则进入测试故事"]
+            }                             
+        },                            
+        "choice_result":-1,                              
+        "next_node_id":"home-intro",             
+        "rqmt_node_list":[],                     
+        "rqmt_node_dict":{                             
+        },                                              
+        "rqmt_got_list":[0, 0, 0],                         
+        "reward_list":[],                            
+        "reward":{                                       
+        }
+    }
+}
