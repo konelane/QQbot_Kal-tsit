@@ -1,3 +1,4 @@
+import re
 import random
 from os.path import basename
 
@@ -81,7 +82,7 @@ class Sweep:
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([
-            RegexMatch('.*老女人|.*谜语|.*鹰语|.*猞猁|.*老妪|.*老太婆|.*哈哈哈哈哈哈哈|.*打牌|.*黑暗决斗')                                 # ,'谜语',
+            RegexMatch(r'.*老女人.*|.*谜语.*|.*鹰语.*|.*猞猁.*|.*老妪.*|.*老太婆.*|.*哈哈哈哈哈哈哈.*|.*打牌.*|.*黑暗决斗.*').flags(re.X)                                 # ,'谜语',
         ])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name), check_permitGroup(blockList.permitGroup)],
     )
@@ -101,7 +102,7 @@ async def SweepSquad(
 
     if sweep_text is not None:
         print(sweep_text)
-        await app.sendGroupMessage(group, MessageChain.create([
+        await app.send_group_message(group, MessageChain([
             Plain(sweep_text)
         ]))
 
@@ -124,6 +125,6 @@ async def SweepSquad(
 #     slightly_inittext = MessageProcesser(message, group, member)
 #     msg_info_dict = slightly_inittext.text_processer()
 #     if msg_info_dict['text_ori'] == '好耶':
-#         await app.sendGroupMessage(group, MessageChain.create([
+#         await app.send_group_message(group, MessageChain([
 #             Plain('好耶')
 #         ]))

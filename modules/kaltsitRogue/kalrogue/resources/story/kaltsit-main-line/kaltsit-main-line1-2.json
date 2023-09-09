@@ -28,7 +28,7 @@
         "dice_result":[],                              
         "choice_result":-1,                              
         "next_node_id":"kaltsit-main-line-return-home",             
-        "rqmt_node_list":["0"],                     
+        "rqmt_node_list":[0],
         "rqmt_node_dict":{                             
             "0":["kaltsit-coffee-cup", "item", "give_out","give_out指需要【交出】道具item kaltsit-coffee-cup"]  
         },                                              

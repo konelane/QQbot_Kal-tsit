@@ -1,0 +1,42 @@
+{
+    
+    "LoopChoice_main":{
+        "node_id":"LoopChoice_main",                  
+        "node_info":{
+            "作者":"KOneLane",
+            "剧情":"",
+            "其他介绍":""
+        },
+        "choice_made":[],                               
+        "node_type":"choice",                           
+        "story_text_file_name":"LoopChoice-filename",      
+        "choice_maker":-1,                               
+        "position_save":0,                              
+        "node_amount":1,                                
+        "is_done":0,                                    
+        "game_time_pass":"",                       
+        "dice_position_list":[],                     
+        "dice_position":{                              
+        },                                              
+        "dice_result":{},  
+        "choice_position_list":[0],                     
+        "choice_position":{                              
+            "0":{
+                "0":["LoopChoice_0","node_name","","选择0则进入测试故事"],
+                "1":["LoopChoice_1","node_name","","选择0则进入测试故事"],
+                "2":["LoopChoice_2","node_name","","选择0则进入测试故事"],
+                "3":["LoopChoice_3","node_name","","选择0则进入测试故事"],
+                "4":["LoopChoice_4","node_name","","选择0则进入测试故事"]
+            }                             
+        },                            
+        "choice_result":-1,                              
+        "next_node_id":"",             
+        "rqmt_node_list":[],                     
+        "rqmt_node_dict":{                             
+        },                                              
+        "rqmt_got_list":[0, 0, 0],                         
+        "reward_list":[],                            
+        "reward":{                                       
+        }
+    }
+}

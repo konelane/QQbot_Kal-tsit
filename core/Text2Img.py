@@ -14,7 +14,7 @@ from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
 from PIL import ImageDraw, ImageFont
 
-from core.config.BotConfig import RConfig, basic_cfg
+from core.config.BotConfig import RConfig, basic_cfg, BasicConfig
 
 root_path = Path(__file__).parent.parent.resolve()
 
@@ -60,9 +60,9 @@ def _get_time(mode: int = 1) -> str:
 
 
 def cut_text(
-    origin: str,
-    font: ImageFont.FreeTypeFont,
-    chars_per_line: int,
+        origin: str,
+        font: ImageFont.FreeTypeFont,
+        chars_per_line: int,
 ):
     target = ''
     start_symbol = '[{<(【《（〈〖［〔“‘『「〝'
@@ -98,11 +98,11 @@ def async_generate_img(*args, **kwargs):
 
 
 def generate_img(
-    text_and_img: list = None,  # list[str | bytes] | list[str] | list[bytes] | None
-    config: Text2ImgConfig = Text2ImgConfig(),
-    img_path = os.path.join('bot/database/temp_prts.jpg'),
-    font_path_folder = 'database/fonts',
-    img_type = None
+        text_and_img: list = None,  # list[str | bytes] | list[str] | list[bytes] | None
+        config: Text2ImgConfig = Text2ImgConfig(),
+        img_path = os.path.join(BasicConfig().databaseUrl + 'temp_prts.jpg'),
+        font_path_folder = BasicConfig().databaseUrl + 'fonts',
+        img_type = None
 ) -> bytes:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
@@ -180,17 +180,17 @@ def generate_img(
 
     # 画布高度=(内容区域高度+(2*正文边距)+(边框上边距+4*边框厚度+2*内外框距离+边框下边距)
     bg_height = (
-        content_height
-        + (2 * config.TextMargin)
-        + (config.BorderTopMargin + (4 * config.BorderOutlineWidth) + (2 * config.BorderInterval))
-        + config.BorderBottomMargin
-        + config.LineSpace
+            content_height
+            + (2 * config.TextMargin)
+            + (config.BorderTopMargin + (4 * config.BorderOutlineWidth) + (2 * config.BorderInterval))
+            + config.BorderBottomMargin
+            + config.LineSpace
     )
     # 画布宽度=行宽+2*正文侧面边距+2*(边框侧面边距+(2*边框厚度)+内外框距离)
     bg_width = (
-        line_width
-        + (2 * config.TextMargin)
-        + (2 * (config.BorderSideMargin + (2 * config.BorderOutlineWidth) + config.BorderInterval))
+            line_width
+            + (2 * config.TextMargin)
+            + (2 * (config.BorderSideMargin + (2 * config.BorderOutlineWidth) + config.BorderInterval))
     )
 
     canvas = Img.new('RGB', (bg_width, bg_height), config.BackgroundColor)
@@ -335,10 +335,10 @@ def generate_img(
     # x=边框侧边距+2*边框厚度+内外框距离+正文侧边距
     # y=边框上边距+2*边框厚度+内外框距离+正文上边距+行号*(行高+行距)
     content_area_x = (
-        config.BorderSideMargin + (2 * config.BorderOutlineWidth) + config.BorderInterval + config.TextMargin
+            config.BorderSideMargin + (2 * config.BorderOutlineWidth) + config.BorderInterval + config.TextMargin
     )
     content_area_y = (
-        config.BorderTopMargin + (2 * config.BorderOutlineWidth) + config.BorderInterval + config.TextMargin - 7
+            config.BorderTopMargin + (2 * config.BorderOutlineWidth) + config.BorderInterval + config.TextMargin - 7
     )
 
     content_area_y += config.LineSpace
@@ -397,11 +397,11 @@ def generate_img(
 
     ## 角落加入m3标志
     canvas.convert('RGBA')
-    
+
     box = (
-        
+
         bg_width - 225,
-        config.BorderTopMargin + 4*config.BorderInterval, 
+        config.BorderTopMargin + 4*config.BorderInterval,
         bg_width - 75,
         config.BorderTopMargin + 4*config.BorderInterval + 150
     )  # 底图上需要P掉的区域
@@ -412,7 +412,7 @@ def generate_img(
     print(tmp_img.size)
     tmp_img = tmp_img.convert('RGBA')
     canvas.paste(tmp_img, box, tmp_img)
-    
+
 
     # 保存为jpg图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#jpeg
     # img_name = 'bot/database/temp_prts.jpg'  # 自定义临时文件的保存名称

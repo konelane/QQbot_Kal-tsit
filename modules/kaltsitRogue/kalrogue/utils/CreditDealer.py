@@ -3,6 +3,8 @@
 import sqlite3
 from uuid import uuid4
 
+from core.config.BotConfig import AdminConfig, BasicConfig
+
 
 class CreditDealer:
     '''
@@ -12,7 +14,7 @@ class CreditDealer:
             - name  | 昵称
     '''
     def __init__(self, msg_out) -> None:
-        self.filename = './bot/database/' # 数据库位置
+        self.filename = BasicConfig().databaseUrl # 数据库位置
         self.signin_box = {
             'id':msg_out['id'],
             'signin_uid':str(uuid4()),
@@ -72,7 +74,7 @@ class CreditDealer:
         '''
         if credit_change < 0: credit_change = abs(credit_change)
         # 1.查询信用值
-        if self.signin_box['id'] in [2238701273]: return 'done'
+        if self.signin_box['id'] in [AdminConfig().masterId]: return 'done'
         dict_of_text = self.__searchSigninData()
         if dict_of_text is not None:
             """根据查询得到的字典更新数据"""

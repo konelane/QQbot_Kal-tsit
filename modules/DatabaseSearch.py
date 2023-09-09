@@ -3,9 +3,11 @@
 # 包括：查卡、查突变
 import datetime
 import random
+import re 
 import sqlite3
 from os.path import basename
 
+from core.config.BotConfig import BasicConfig
 from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
@@ -36,7 +38,7 @@ Module(
 class CardSearch:
     def __init__(self,card_name):
         self.name = card_name
-        self.filename = './bot/database/cards/' # 初始化权限文件路径
+        self.filename = BasicConfig().databaseUrl + 'cards/' # 初始化权限文件路径
         self.cardTextHeader = [
             'id','name','desc'
         ] # 整张表的表头
@@ -173,7 +175,7 @@ class StarCraftPVE:
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'#查卡')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#查卡.*').flags(re.X)])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
@@ -192,7 +194,7 @@ async def YGOsearch(
         textall = ' '.join([x for x in msg_info_dict['text_split'][1::]]) # 空格连接
         temp = CardSearch(textall)
         out_text = temp.cardTextReturn()
-        await app.sendGroupMessage(group, MessageChain.create([
+        await app.send_group_message(group, MessageChain([
             Plain(out_text)
         ]))
 
@@ -228,7 +230,7 @@ async def StarcraftPVE(
         else:
             temp = StarCraftPVE('第k周后的突变')
             out_text = temp.NextTubian(int(msg_info_dict['text_split'][1])-1)
-        await app.sendGroupMessage(group, MessageChain.create([
+        await app.send_group_message(group, MessageChain([
             Plain(out_text)
         ]))
 

@@ -3,6 +3,8 @@
 '''
 game contants 游戏设置常量
 '''
+from core.config.BotConfig import AdminConfig
+
 # start_game_credit_consumption = 100 # 开启新游戏所需要的的信用值
 START_GAME_CREDIT_CONSUMPTION = 0
 
@@ -16,10 +18,10 @@ MODE_INIT_SET = {
 }
 
 AUTH_USER_LIST = [
-    2238701273
+    AdminConfig().masterId
 ]
 TEST_USER_LIST = [
-    591016144#, 2238701273
+    591016144
 
 ]
 

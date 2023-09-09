@@ -1,14 +1,17 @@
 {
-  "botName": "botName",
+  "account": 123,
+  "botName": "aaa",
   "logChat": false,
   "console": false,
   "debug": false,
-  "databaseUrl": "数据库db地址",
+  "databaseUrl": "数据库父目录-最好是绝对地址 若在根目录下运行文件，可以设置./bot/database/",
   "admin": {
-    "masterId": 114514,
-    "masterName": "114514",
+    "masterId": 11451455555,
+    "masterName": "114514111",
     "admins": [
       114514
     ]
-  }
+  },
+  "host": "http://localhost:8082",
+  "verifyKey": "mah配置的key"
 }

@@ -1,8 +1,11 @@
 import sqlite3
 
+from core.config.BotConfig import BasicConfig
+
+
 class GameDatabase:
     
-    filename = './bot/database/' # 数据库位置
+    filename = BasicConfig().databaseUrl # 数据库位置
     table_head = ["changer_id", "group_id", "default_save", "creator_id", "active_status"]
         
     @classmethod

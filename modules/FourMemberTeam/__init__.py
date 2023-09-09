@@ -1,11 +1,14 @@
 import datetime
 import os
+import re
 import sqlite3
 import urllib.request  # 下载图片
 from os.path import basename
 
 import cv2  # 图像合成
-from core.decos import check_group, check_member, DisableModule
+
+from core.config.BotConfig import BasicConfig
+from core.decos import check_group, check_member, DisableModule, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
 from database.kaltsitReply import blockList
@@ -39,7 +42,7 @@ class TwoTwoOrder:
     """
     
     def __init__(self, input_text_dict) -> None:
-        self.filename = './bot/database/' # 数据库位置
+        self.filename = BasicConfig().databaseUrl # 数据库位置
         self.cardTable = {
             'table_no':0,
             'member_length':2,
@@ -406,9 +409,9 @@ class TwoTwoOrder:
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([
-            UnionMatch('22 ', '#22 ')
+            RegexMatch(r'22.*|\#22.*').flags(re.X)
         ])],
-        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), DisableModule.require(module_name)],
+        decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def twotwoorder(
@@ -432,20 +435,20 @@ async def twotwoorder(
         功能返回值为 tuple('文件名/空字符','文字信息')
         """
         if return_text[0] == '':
-            await app.sendGroupMessage(group, MessageChain.create([
+            await app.send_group_message(group, MessageChain([
                 Plain(return_text[1])
             ]))
             
 
         elif type(return_text[1]) != list:
             # 人没齐 / 有差错
-            await app.sendGroupMessage(group, MessageChain.create([
+            await app.send_group_message(group, MessageChain([
                 Plain(return_text[1]+"\n"),
                 Image(path=return_text[0])
             ]))
 
         elif type(return_text[1]) == list:
-            await app.sendGroupMessage(group, MessageChain.create([
+            await app.send_group_message(group, MessageChain([
                 Plain('22人，就位！'+"\n"),
                 At(int(return_text[1][0])),At(int(return_text[1][1])),At(int(return_text[1][2])),At(int(return_text[1][3])),
                 Image(path=return_text[0])

@@ -7,13 +7,17 @@ from os.path import basename
 import random
 
 import osmnx as ox
-import requests
+import json
+
+from core.config.BotConfig import AdminConfig
 from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
 from core.Text2Img import generate_img
 from database.kaltsitReply import blockList, text_table
-from geopy.geocoders import Nominatim
+from geopy.geocoders import Nominatim  # 20230618超时问题无法解决
+from geopy.geocoders import GoogleV3
+import requests
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -23,8 +27,6 @@ from graia.ariadne.model import Group, Member
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from prettytable import PrettyTable
-from pygal.style import LightColorizedStyle as LCS
-from pygal.style import LightenStyle as LS
 
 channel = Channel.current()
 
@@ -60,7 +62,7 @@ class ForcastForTricks():
         self.lon = 116.391
         self.lat = 39.907
 
-    def __location_get(self):
+    def __location_get_aborted(self):
         """获取指定地名的经纬度 并更新类变量"""
         geolocator = Nominatim(user_agent="kal-tsit")
         location = geolocator.geocode(self.text[1])
@@ -71,18 +73,32 @@ class ForcastForTricks():
             self.lat = location.latitude
             return 'updated'
 
+    def __location_get(self):
+        """使用高德api获取经纬度，限制5000次1天"""
+        url = 'https://restapi.amap.com/v3/geocode/geo?' + 'key=' + AdminConfig().GAODE_KEY + '&address=' + self.text[1]
+        res = requests.get(url)
+        if res.content is not None:
+            location = json.loads(res.content)['geocodes'][0]['location'].split(',')
+            self.lon = float(location[0])
+            self.lat = float(location[1])
+            return 'updated'
+        return
+
+
+
     def __url_sky_get(self):
         """天气json数据获取"""
-        try:
-            self.__location_get() # 先更新
-            url= f'https://www.7timer.info/bin/api.pl?lon={str(self.lon)}&lat={str(self.lat)}&product={self.product}&output={self.output}&tzshift=8'#存储API调用的URL
-            r=requests.get(url) #获得URL对象
-            # print("Status code:",r.status_code) #判断请求是否成功（状态码200时表示请求成功）
-            response_dict=r.json() 
-            
-            return response_dict
-        except:
-            return 'timeout'
+        # try:
+        self.__location_get() # 先更新
+        url= f'https://www.7timer.info/bin/api.pl?lon={str(self.lon)}&lat={str(self.lat)}&product={self.product}&output={self.output}&tzshift=8'#存储API调用的URL
+        # print(url, self.lon, self.lat)
+        r=requests.get(url) #获得URL对象
+        # print("Status code:",r.status_code) #判断请求是否成功（状态码200时表示请求成功）
+        response_dict=r.json()
+
+        return response_dict
+        # except:
+        #     return 'timeout'
 
     def __map_get(self):
         """画地图"""
@@ -100,9 +116,9 @@ class ForcastForTricks():
             return 'map'
         else:
             return '地点不存在'
-    
 
-    
+
+
     def machine_read_picture(self, dict_of_data):
         '''API返回的指标值对应的气象标签 - need package PrettyTable'''
         """
@@ -201,12 +217,12 @@ class ForcastForTricks():
             x.add_row([
                 int(forcast_dict['timepoint']/2),
                 level_dict['cloudcover'][str(forcast_dict['cloudcover'])],
-                level_dict['seeing'][str(forcast_dict['seeing'])], 
+                level_dict['seeing'][str(forcast_dict['seeing'])],
                 level_dict['transparency'][str(forcast_dict['transparency'])],
                 level_dict['rh2m'][str(forcast_dict['rh2m'])],
-                
+
             ])
-        
+
         # y = PrettyTable(['时间','湿度','温度','风向'])
         # y.padding_width = 1  # 填充宽度
         # for forcast_dict in dict_of_data:
@@ -248,7 +264,7 @@ class ForcastForTricks():
                 else:
                     outputx,outputz = self.machine_read_picture(ans_dict['dataseries'][1:17:2])
                     generate_img(
-                        [str(self.text[1]) + '的天气预测如下：','\n',str(outputx),'\n',str(outputz)], 
+                        [str(self.text[1]) + '的天气预测如下：','\n',str(outputx),'\n',str(outputz)],
                         img_path = os.path.join('bot/database/temp_forcast.jpg')#,
                         # img_type = 'forcast'
                     )
@@ -259,15 +275,15 @@ class ForcastForTricks():
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch('#天气 |#地图 ')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#天气.*|\#地图.*').flags(re.X)])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
 async def Forcast_app(
-    app: Ariadne, 
+    app: Ariadne,
     message: MessageChain,
     group: Group,
-    member: Member 
+    member: Member
 ):
 
     slightly_inittext = MessageProcesser(message,group,member)
@@ -281,13 +297,13 @@ async def Forcast_app(
         # print(abc)
         if abc == None:
             img_path = os.path.join('bot/database/temp_forcast.jpg')
-            
-            await app.sendGroupMessage(group, MessageChain.create(
+
+            await app.send_group_message(group, MessageChain(
                 Plain(random.sample(text_table,1)[0]),
                 Image(path=img_path)
             ))
         elif abc == 'timeout':
-            await app.sendGroupMessage(group, MessageChain.create(
+            await app.send_group_message(group, MessageChain(
                 Plain('终端连接超时了，博士，过会再试试。')
             ))
 
@@ -297,13 +313,12 @@ async def Forcast_app(
 
         if abc == 'map':
 
-            await app.sendGroupMessage(group, MessageChain.create(
+            await app.send_group_message(group, MessageChain(
                 Plain(random.sample(text_table,1)[0]),
                 Image(path='C:/Users/Administrator/bot/database/temp_map.png')
             ))
         elif abc == '地点不存在':
-            await app.sendGroupMessage(group, MessageChain.create([
+            await app.send_group_message(group, MessageChain([
                 Plain('数据库中没有记录，你或许可以试试更加古老的方式。')
             ]))
 
-        

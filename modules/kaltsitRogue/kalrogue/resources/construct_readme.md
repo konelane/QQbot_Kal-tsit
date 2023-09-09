@@ -21,7 +21,7 @@
         "choice_maker":591016144,                               # 做出选择者 for save   
         "position_save":1,                                      # 已进行到的位置 for save
         "node_amount":5,                                        # 节点总共步数(故事长度) set
-        "is_done":0,            # 0 未完成                       # 当前故事节点是否已全部完成 for save  TODO:"检查"方法
+        "is_done":0,            # 0                             # 当前故事节点是否已全部完成 for save  TODO:"检查"方法
         "game_time_pass":"17:00",                               # 经过时游戏时间
         "dice_position_list":[2],                               # 骰子位置 set
         "dice_position":{                                                 
@@ -33,7 +33,7 @@
         "rqmt_node_list":[1,3],                                 # 节点依赖卡控节点列表 set
         "rqmt_node_dict":{                                             
             1:["amiya", "operator","lock"],                     # set 依赖内容, 【依赖类型 operator | item | event 】, 未达成时状态 分支节点
-            2:["60", "dice", "amiya_story_line1-2"])            # set 依赖内容, 【依赖类型 dice】, 未达成时状态 分支节点
+            2:["60", "dice", "amiya_story_line1-2"],            # set 依赖内容, 【依赖类型 dice】, 未达成时状态 分支节点
             3:["kaltsit-coffee-cup", "item", "hurt"]            # set 依赖内容, 依赖类型, 【未达成时状态 lock | hurt | dice】
         },
         "rqmt_got_list":[1, 0],                                 # set 1 已具备 0 未具备  TODO:"检查"方法

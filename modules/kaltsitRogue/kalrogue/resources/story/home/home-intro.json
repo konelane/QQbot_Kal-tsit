@@ -23,7 +23,8 @@
         "choice_position_list":[0],                     
         "choice_position":{                              
             "0":{
-                "0":["kaltsit-main-line1","node_name","","默认故事-基本故事 选择0则进入测试故事"]
+                "0":["kaltsit-main-line1","node_name","","默认故事-基本故事 选择0则进入测试故事"],
+                "1":["LoopChoice_main","node_name","","默认故事-基本故事 选择0则进入测试故事"]
             }                             
         },                            
         "choice_result":-1,                              

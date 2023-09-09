@@ -18,6 +18,7 @@ import time
 from os.path import basename
 from uuid import uuid4
 
+from core.config.BotConfig import BasicConfig
 from core.decos import check_group, check_member, DisableModule
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
@@ -51,7 +52,7 @@ class SigninClass:
     """
     
     def __init__(self, msg_out) -> None:
-        self.filename = './bot/database/' # 数据库位置
+        self.filename = BasicConfig().databaseUrl # 数据库位置
         self.signin_box = {
             'id':msg_out['id'],
             'signin_uid':str(uuid4()),
@@ -326,5 +327,5 @@ async def SigninTietie(
     elif outtext == 'reliance_not_enough':
         '''【STATUS】贴贴失败'''
         await app.sendGroupMessage(group, MessageChain.create([
-            Image(path='C:/Users/Administrator/bot/database/faces/power.jpg')
+            Image(path=BasicConfig().databaseUrl + 'faces/power.jpg')
         ]))

@@ -1,10 +1,11 @@
 #男老婆
-
+import re
 import random
 import sqlite3
 from os.path import basename
 from uuid import uuid4
 
+from core.config.BotConfig import BasicConfig
 from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
@@ -34,7 +35,7 @@ Module(
 class HusGet:
 
     def __init__(self, msg_out) -> None:
-        self.filename = './bot/database/' # 数据库位置
+        self.filename = BasicConfig().databaseUrl # 数据库位置
         self.signin_box = {
             'id':msg_out['id'],
             'signin_uid':str(uuid4()),
@@ -351,7 +352,7 @@ class HusGet:
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'#值班')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#值班').flags(re.X)])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
@@ -374,15 +375,15 @@ async def Praise(
         if outtext == 'work':
             hus_opt, hus_reply= HusGet.roll_box()
             reply_text = '今日值班干员：' + hus_opt + '\n' + hus_reply
-            await app.sendGroupMessage(group, MessageChain.create([
+            await app.send_group_message(group, MessageChain([
                 Plain(reply_text)
             ]))
         elif outtext == '':
-            await app.sendGroupMessage(group, MessageChain.create([
+            await app.send_group_message(group, MessageChain([
                 Plain('干员薪资都发不起，自己去打卡上班。')
             ]))
 
         else:
-            await app.sendGroupMessage(group, MessageChain.create([
+            await app.send_group_message(group, MessageChain([
                 Plain(outtext)
             ]))

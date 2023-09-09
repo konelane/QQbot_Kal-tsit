@@ -4,13 +4,13 @@
 class MessageProcesser:
     """消息标准化处理器-群聊类"""
     def __init__(
-        self
-        ,message
-        ,group
-        ,member
+            self
+            ,message
+            ,group
+            ,member
     ) -> None:
-        
-        self.text = message.asDisplay()
+
+        self.text = message.display
         self.id = member.id
         self.msgout = {
             'id':self.id,

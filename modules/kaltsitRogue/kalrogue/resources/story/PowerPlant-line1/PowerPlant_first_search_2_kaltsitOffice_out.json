@@ -1,0 +1,36 @@
+{
+
+  "PowerPlant_first_search_2_kaltsitOffice_out":{
+    "node_id":"PowerPlant_first_search_2_kaltsitOffice_out",
+    "node_info":{
+      "作者":"KOneLane",
+      "剧情":"搜查了电脑之后",
+      "其他介绍":""
+    },
+    "choice_made":[],
+    "node_type":"autotext",
+    "story_text_file_name":"PowerPlant-line1",
+    "choice_maker":-1,
+    "position_save":0,
+    "node_amount":1,
+    "is_done":0,
+    "game_time_pass":"7:00",
+    "dice_position_list":[],
+    "dice_position":{
+    },
+    "choice_position_list":[],
+    "choice_position":{
+    },
+    "dice_result":[],
+    "choice_result":-1,
+    "next_node_id":"PowerPlant_main",
+    "rqmt_node_list":[],
+    "rqmt_node_dict":{
+    },
+    "rqmt_got_list":[0],
+    "reward_list":["2"],
+    "reward":{
+      "1":["clue_001", "item", "finish_step","最后一格是解释内容 这里指当finish_step阶段达成时，奖励名为clue_001的item"]
+    }
+  }
+}

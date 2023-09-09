@@ -1,7 +1,7 @@
 {
     
     "kaltsit-main-line1":{
-        "node_id":"kaltsit-main-line1",                  
+        "node_id":"kaltsit-main-line1",
         "node_info":{
             "作者":"KOneLane",
             "剧情":"测试用段落1",
@@ -24,11 +24,19 @@
         },                                             
         "dice_result":{},                              
         "choice_result":-1,                              
-        "next_node_id":"kaltsit-main-line1-2",             
-        "rqmt_node_list":["100","1"],                     
+        "next_node_id":"kaltsit-main-line1",
+        "rqmt_node_list":[100, 1],
         "rqmt_node_dict":{                             
-            "100":["amiya", "operator","lock","最后一格是解释内容 本行指在1号格处需要带有阿米娅干员才能通过，否则后续节点上锁"],           
-            "1":["60", "dice", "kaltsit-main-line1-1","本行指在2号格处需要掷骰，按上面dice_position处，骰子为1d100+0，点数大于60时继续进行，否则进入节点kaltsit-main-line1-2"]  
+            "100":["amiya", "operator",
+                {
+                    "rqmt_type": "lock",
+                    "node_name": "home-intro"
+                },"最后一格是解释内容 本行指在1号格处需要带有阿米娅干员才能通过，否则回退至home-intro"],
+            "1":["60", "dice",
+                {
+                    "check_type": "GREATER_THAN",
+                    "node_name": "kaltsit-main-line1-2"
+                },"本行指在2号格处需要掷骰，按上面dice_position处，骰子为1d100+0，点数大于60时继续进行至1-1，否则进入节点kaltsit-main-line1-2"]
         },                                              
         "rqmt_got_list":[0, 0, 0],                         
         "reward_list":[],                            

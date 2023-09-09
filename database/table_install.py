@@ -2,9 +2,12 @@ import sqlite3
 from uuid import uuid4
 import time
 
+from core.config.BotConfig import BasicConfig
+
+
 class DataTableInstall:
     def __init__(self) -> None:
-        self.filename = './bot/database/' # 数据库位置
+        self.filename = BasicConfig().databaseUrl # 数据库位置 需修改，在上层目录执行
         pass
 
     def __connectSqlite(self):
@@ -86,4 +89,6 @@ if __name__ =='__main__':
         'text_ori':'#抽卡',
     }
     table_create_obj = DataTableInstall()
+    table_create_obj.gachaTableCreate()
+    table_create_obj.kheartTableCreate()
     table_create_obj.kaltsitRogueTableCreate()

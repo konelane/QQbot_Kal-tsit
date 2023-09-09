@@ -37,7 +37,7 @@ from io import BytesIO
 from typing import Optional, Union
 from PIL import Image as PImage, ImageDraw, ImageFilter, ImageFont
 
-
+from core.config.BotConfig import BasicConfig
 from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
@@ -68,7 +68,7 @@ class AkGuess:
 
     def __init__(self, msg_dict) -> None:
         """初始化猜干员"""
-        self.filename = './bot/database/' # 数据库位置
+        self.filename = BasicConfig().databaseUrl # 数据库位置
         with open(os.path.dirname(__file__) + './resources/character_table.json','r',encoding='utf8')as fp:
             self.json_data = json.load(fp)
         with open(os.path.dirname(__file__) + './resources/handbook_info_table.json','r',encoding='utf8')as fp:
@@ -424,7 +424,7 @@ class AkGuess:
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'#g')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#g.*')])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
@@ -441,30 +441,30 @@ async def AkGuessApp(
     guess_obj = AkGuess(msg_info_dict)
     out_cmd, out_dir = guess_obj.guessAction()
     if out_cmd == 'rightAnswer':
-        await app.sendGroupMessage(group, MessageChain.create(
+        await app.send_group_message(group, MessageChain(
             Plain(random.sample(guessTable,1)[0] + '\n'),
             Image(path=out_dir)
         ))
     elif out_cmd =='wrong':
-        await app.sendGroupMessage(group, MessageChain.create(
+        await app.send_group_message(group, MessageChain(
             Plain('错了。' + '\n'),
             Image(path=out_dir)
         ))
     elif out_cmd =='notExists':
-        await app.sendGroupMessage(group, MessageChain.create(
+        await app.send_group_message(group, MessageChain(
             Plain('不存在这个干员。')
         ))
     elif out_cmd =='noRecord':
-        await app.sendGroupMessage(group, MessageChain.create(
+        await app.send_group_message(group, MessageChain(
             Plain('这里没有题。')
         ))
     elif out_cmd =='done':
-        await app.sendGroupMessage(group, MessageChain.create(
+        await app.send_group_message(group, MessageChain(
             Plain('猜了太多次。告诉你答案吧。'),
             Image(path=out_dir)
         ))
     elif out_cmd =='new':
-        await app.sendGroupMessage(group, MessageChain.create(
+        await app.send_group_message(group, MessageChain(
             Plain('好了，你猜吧。')
         ))
 

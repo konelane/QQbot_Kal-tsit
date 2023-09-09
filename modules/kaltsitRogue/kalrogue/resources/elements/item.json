@@ -1,12 +1,13 @@
 {
-    "item_list":["cashOriginBlock","Mon3tr", "kaltsit-coffee-cup"],
+    "item_list":[
+        "cashOriginBlock","Mon3tr", "kaltsit-coffee-cup",
+        "clue_001"
+    ],
     "item":
     {
         "cashOriginBlock":{
             "name":"精炼源石锭",
-            "type":"money"           
-            
-            
+            "type":"money"
         },
         
         "Mon3tr":{
@@ -17,6 +18,11 @@
         "kaltsit-coffee-cup":{
             "name":"凯尔希的咖啡杯",
             "type":"keyitem"
+        },
+
+        "clue_001": {
+            "name": "线索-动力室用电增加",
+            "type": "keyitem"
         }
 
     }

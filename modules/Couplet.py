@@ -1,5 +1,8 @@
 import random
+import re
 from os.path import basename
+
+from selenium.webdriver.common.by import By
 
 from core.decos import check_group, check_member, DisableModule, check_permitGroup
 from core.ModuleRegister import Module
@@ -62,13 +65,13 @@ class couplet_api:
         dr0 = self.__init_chrome(load = 2) # 设置为不加载图片
         dr0.get(f'https://ai.binwang.me/couplet/')
         
-        dr0.find_element_by_class_name('couplet-input').send_keys(self.text)
-        dr0.find_element_by_class_name('couplet-input').send_keys(Keys.ENTER)
+        dr0.find_element(By.CLASS_NAME,'couplet-input').send_keys(self.text)
+        dr0.find_element(By.CLASS_NAME,'couplet-input').send_keys(Keys.ENTER)
         # dr0.find_element_by_xpath('//*[@id="app"]/div[1]/div[1]/div[3]/button[1]').click()
         sleep(3)
         # '/html/body/div/div[1]/div[2]/div[1]/div[2]'
         # WebDriverWait(dr0,10).until(EC.visibility_of_element_located(dr0.find_element_by_css_selector('#app > div.page > div.content > div.couplet-text.couplet-text_down > div.couplet-bd')))
-        return_text = dr0.find_element_by_xpath('/html/body/div/div[1]/div[2]/div[2]/div[2]').text
+        return_text = dr0.find_element(By.XPATH, '/html/body/div/div[1]/div[2]/div[2]/div[2]').text
 
         # dr0.quit()
 
@@ -78,7 +81,7 @@ class couplet_api:
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'#对 ')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#对 .*').flags(re.X)])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
@@ -94,6 +97,6 @@ async def Dice(
     input_text = '，'.join(x for x in msg_info_dict['text_split'][1::])
 
     couplet_a = couplet_api(input_text)
-    await app.sendGroupMessage(group, MessageChain.create(
+    await app.send_group_message(group, MessageChain(
         Plain(couplet_a.CoupletGet())
     ))

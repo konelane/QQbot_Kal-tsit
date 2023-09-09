@@ -1,4 +1,4 @@
-from kalrogue.resources.game.GameContants import (
+from kalrogue.resources.constants.GameContants import (
     START_GAME_CREDIT_CONSUMPTION )
 
 class GameTable:

@@ -20,6 +20,10 @@
 from os.path import basename
 import sys
 import os
+import re
+
+from core.config.BotConfig import BasicConfig
+
 sys.path.append(os.path.dirname(__file__))
 
 import kalrogue
@@ -55,7 +59,7 @@ Module(
 
 class kalrogueAppRequest:
     def __init__(self, msg_out) -> None:
-        self.filename = './bot/database/' # 数据库位置
+        self.filename = BasicConfig().databaseUrl # 数据库位置
         self.msg_box = {
             'id':msg_out['id'],
             'name': msg_out['name'],
@@ -86,7 +90,7 @@ class kalrogueAppRequest:
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'#kr')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#kr.*').flags(re.X)])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.rogueGroup), DisableModule.require(module_name)],
     )
 )
@@ -107,7 +111,7 @@ async def Praise(
         temp = kalrogueAppRequest(msg_info_dict)
         outtext = temp.main()
         if outtext is not None and outtext != '':
-            await app.sendGroupMessage(group, MessageChain.create([
+            await app.send_group_message(group, MessageChain([
                 Plain(outtext)
             ]))
         

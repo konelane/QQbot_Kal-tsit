@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # coding:utf-8
 import random
+import re
 from os.path import basename
 
 from core.decos import check_group, check_member, DisableModule, check_permitGroup
@@ -17,6 +18,8 @@ from graia.ariadne.message.parser.twilight import Twilight
 from graia.ariadne.model import Group, Member
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
+
+# 已停止更新
 
 channel = Channel.current()
 
@@ -150,7 +153,7 @@ class Operator_rollbox:
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'#hw')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#hw').flags(re.X)])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
@@ -176,6 +179,6 @@ async def Dice(
 
     out_text +='--钢铁男儿左手窝窝屎右手砍口垒 群作业系统v2.0--' + '\n'
     out_text +='--p.s.33%几率出稀有奖励干员--' + '\n'
-    await app.sendGroupMessage(group, MessageChain.create(
+    await app.send_group_message(group, MessageChain(
         Plain(out_text)
     ))

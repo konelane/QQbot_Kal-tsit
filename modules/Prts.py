@@ -7,6 +7,8 @@ from os.path import basename
 
 import requests
 from bs4 import BeautifulSoup as bs
+
+from core.config.BotConfig import BasicConfig
 from core.decos import DisableModule, check_group, check_member, check_permitGroup
 from core.MessageProcesser import MessageProcesser
 from core.ModuleRegister import Module
@@ -310,7 +312,7 @@ async def Prts_app(
         # 模组系统
         if out_list != '' and out_list != []:
             generate_img([''.join(x for x in out_list)]) 
-            img_name = 'bot/database/temp_prts.jpg'  # 自定义临时文件的保存名称
+            img_name = BasicConfig().databaseUrl + 'temp_prts.jpg'  # 自定义临时文件的保存名称
             img_path = os.path.join(img_name)
             await app.sendGroupMessage(group, MessageChain.create(
                 Plain(random.sample(text_table,1)[0]),

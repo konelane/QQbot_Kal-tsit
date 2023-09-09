@@ -4,6 +4,7 @@
 import time
 from os.path import basename
 from time import sleep
+import re
 
 from core.decos import (DisableModule, check_group, check_member,
                         check_permitGroup)
@@ -211,7 +212,7 @@ class TrainTong:
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'#ttt')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#ttt.*').flags(re.X)])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
@@ -230,7 +231,7 @@ async def Train(
     outtext = trainTong.orderService()
 
     if outtext != '' or outtext is not None:
-        await app.sendGroupMessage(group, MessageChain.create(
+        await app.send_group_message(group, MessageChain(
             Plain(outtext)
         ))
 

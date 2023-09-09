@@ -1,0 +1,14 @@
+pillow
+requests
+opencv-python
+bs4
+graia-ariadne[full]
+selenium
+osmnx
+geopy
+prettytable
+pygal
+xpinyin
+openai
+tiktoken
+httpx

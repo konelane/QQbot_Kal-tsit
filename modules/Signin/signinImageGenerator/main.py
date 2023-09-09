@@ -22,15 +22,30 @@ import argparse
 
 placeholder = "占位符+123"  # 用于获取字符高度
 
-def lucky_word_write():
+def lucky_word_write(input_type=None, input_contain=None):
+    """
+    :param input_type: opt 自定义干员 | luck 自定义吉祥
+    :param input_contain: 0到9
+    :return:
+    """
     outtext = ''
-    luck_dict = random.choice(sign_luck)
+    if input_type == 'setopt':
+        luck_dict = sign_luck[int(input_contain)]
+    elif input_type is None:
+        luck_dict = random.choice(sign_luck)
+    else:
+        luck_dict = random.choice(sign_luck) # TODO
     luck_type = {
         10:'大大吉',7:'大吉',5:'中吉',3:'中吉',1:'小吉',
         -10:'大凶',-7:'中凶',-5:'小凶',-3:'小凶',-1:'小吉'
     }
-    
-    luck_dict_choice = random.choice(luck_dict["choice"])
+    # cheat
+    if input_type == 'setluck':
+        luck_dict_choice = luck_dict["choice"][int(input_contain)]
+    else:
+        luck_dict_choice = random.choice(luck_dict["choice"])
+
+
     luck_type_choice = list(luck_dict_choice.keys())[0]
     outtext = outtext + '今日运势: ' + list(luck_dict_choice.values())[0][0] +' - ' +luck_type[luck_type_choice] + '\n'
     outtext = outtext + f'来自干员· {luck_dict["_name"]} ·的信息:' + '\n'
@@ -42,7 +57,7 @@ def get_signin_img(
     qq: int,
     name: str,
     uuid: Optional[Union[UUID, str]],
-    level: int,
+    level,
     exp,#: tuple[int, int],
     total_days: int,
     consecutive_days: int,
@@ -52,6 +67,7 @@ def get_signin_img(
     text_color: Ink = "white",
     exp_bar_fg_color: Ink = "#FE9A2E",
     exp_bar_bg_color: Ink = "#00000055",
+    extra_cheat_tuple: tuple = None,
 ) -> bytes:
     """生成一张签到打卡图，应该算 CPU 密集型任务，因此 httpx 并没有使用 asyncio 如有需要可自行魔改
     Args:
@@ -68,6 +84,7 @@ def get_signin_img(
         text_color (_In): 文字颜色
         exp_bar_fg_color (_Ink): 经验条前景色
         exp_bar_bg_color (_Ink): 经验条背景色
+        extra_cheat_tuple : 作弊参数使用
     Returns:
         bytes: 生成结果的图片二进制数据
     """
@@ -127,7 +144,7 @@ def get_signin_img(
     font_3 = ImageFont.truetype(font_path, size=45)
     qq_text = f"QQ：{qq}"
     uid = f"uid：{uuid}"
-    impression = f"信赖值：Lv{level}  {exp[0]} / {exp[1]}"
+    impression = "信赖值：Lv"+ str(level) + f"  {exp[0]} / {exp[1]}"
 
     y = avatar_xy + 25
 
@@ -180,8 +197,12 @@ def get_signin_img(
     #     hotokoto = "今天的学习资料获取失败"
     #     print(e)
     # else:
-    #     
-    hotokoto, luck_words = lucky_word_write()
+    #
+    if extra_cheat_tuple[0] == 'auto':
+        hotokoto, luck_words = lucky_word_write()
+    else:
+        hotokoto, luck_words = lucky_word_write(input_type=extra_cheat_tuple[0], input_contain=extra_cheat_tuple[1])
+
     # hotokoto = '''由于一言目前属于公益性运营，为了保证资源的公平利用和不过度消耗公益资金，我们会定期的屏蔽某些大流量的站点。若您的站点的流量较大，您需要提前联系我们获得授权后再开始使用。对于超过阈值的站点，我们有可'''
     font_4 = ImageFont.truetype(font_path, size=50)
     draw.text(
@@ -191,7 +212,7 @@ def get_signin_img(
         fill=text_color,
         spacing=12,
     )  # 最大不要超过5行
-    
+
     font_lucky_words = ImageFont.truetype(font_path, size=35)
     draw.text(
         (2 * avatar_xy + avatar_size + 50, avatar_xy + avatar_size + 250),
@@ -235,9 +256,11 @@ if __name__ == "__main__":
     parser.add_argument("--reliance", type=int, default=0)
     parser.add_argument("--credit", type=int, default=0)
     parser.add_argument("--last_signin_time", type=str, default="2022/02/26-00:00:00")
+    parser.add_argument("--cheat_code", type=str, default='auto')
+    parser.add_argument("--cheat_msg", type=str, default=None)
 
     args = parser.parse_args()
-    
+
 
     # 假设触发了签到事件，获得了用户的QQ号、群名片
     qq = args.id
@@ -250,15 +273,19 @@ if __name__ == "__main__":
     consecutive_days = args.consecutive_days
     last_signin_time = time.time() - 86390  # 该值仅用于测试
     exp = (args.exp, 200)
-    
-    # qq = 2238701273;name='博士test';uid_s='1234uidtest';total_days=3;consecutive_days=2;exp=(100,200);is_signin_consecutively=1
 
     is_signin_consecutively = True if args.is_signin_consecutively == 1 else False
+
+    leveltemp = 1
+    if exp[0] >= 200: leveltemp = 'Max'
+    # 默认extra元祖是 (auto, none)
+    extra_cheat_tuple_test = (args.cheat_code, args.cheat_msg)
+
     img_bytes = get_signin_img(
         qq=qq,
         name=name,
         uuid=uid_s,
-        level=1,    # 回头加一个等级表
+        level=leveltemp,    # 回头加一个等级表
         exp=exp,
         total_days=total_days,
         consecutive_days=consecutive_days,
@@ -268,6 +295,7 @@ if __name__ == "__main__":
             Reward(name="信用", num=args.credit, ico=join(dirname(__file__), "imgs", "credit.png")),
         ],
         font_path=font_path,
+        extra_cheat_tuple=extra_cheat_tuple_test
     )
     # print(img_bytes)
     save_dir = dirname(__file__) + '/save_test.png'

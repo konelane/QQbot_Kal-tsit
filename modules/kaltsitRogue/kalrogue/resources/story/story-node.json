@@ -5,6 +5,13 @@
     "kaltsit-main-line1-1": "kaltsit-main-line",
     "kaltsit-main-line1-2": "kaltsit-main-line",
     "kaltsit-main-line-return-home":"kaltsit-main-line",
-    "home-intro":"home"
+    "home-intro":"home",
+    "LoopChoice_main":"LoopChoice-filename",
+    "LoopChoice_0":"LoopChoice-filename",
+    "LoopChoice_1":"LoopChoice-filename",
+    "LoopChoice_2":"LoopChoice-filename",
+    "LoopChoice_3":"LoopChoice-filename",
+    "LoopChoice_4":"LoopChoice-filename",
+    "LoopChoice_out1":"LoopChoice-filename"
     
 }

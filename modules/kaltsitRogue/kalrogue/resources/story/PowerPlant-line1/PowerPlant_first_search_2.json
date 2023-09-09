@@ -1,0 +1,41 @@
+{
+  "PowerPlant_first_search_2":{
+    "node_id":"PowerPlant_first_search_2",
+    "node_info":{
+      "作者":"KOneLane",
+      "剧情":"",
+      "其他介绍":""
+    },
+    "choice_made":[],
+    "node_type":"choice",
+    "story_text_file_name":"PowerPlant-line1",
+    "choice_maker":-1,
+    "position_save":0,
+    "node_amount":2,
+    "is_done":0,
+    "game_time_pass":"",
+    "dice_position_list":[],
+    "dice_position":{
+    },
+    "dice_result":{},
+    "choice_position_list":[0],
+    "choice_position":{
+      "0":{
+        "0":["PowerPlant_first_search_2_kaltsitOffice0","node_name","","选择0 办公桌"],
+        "1":["PowerPlant_first_search_2_kaltsitOffice1","node_name","","选择1 垃圾桶"],
+        "2":["PowerPlant_first_search_2_kaltsitOffice2","node_name","","选择2 衣服"],
+        "3":["PowerPlant_first_search_2_kaltsitOffice3","node_name","","选择3 电脑"],
+        "4":["PowerPlant_first_search_2_kaltsitOffice4","node_name","","选择4 鞋子"]
+      }
+    },
+    "choice_result":-1,
+    "next_node_id":"",
+    "rqmt_node_list":[],
+    "rqmt_node_dict":{
+    },
+    "rqmt_got_list":[0, 0, 0],
+    "reward_list":[],
+    "reward":{
+    }
+  }
+}

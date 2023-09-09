@@ -5,3 +5,4 @@
 
 choice:
 0：test_story
+1：测试故事-调查凯尔希的办公室

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-'''移植自 https://github.com/Redlnn/redbot/tree/master/util/config.py'''
+"""移植自 https://github.com/Redlnn/redbot/tree/master/util/config.py"""
 
 from pathlib import Path
 import os
@@ -60,19 +60,23 @@ class RConfig(BaseModel):
 
 
 class MAHConfig(RConfig):
-    account: int = 1234512345#  bot账号
+    __filename__: str = 'kaltsit_config'
+
+    account: int = 1234512345 # bot账号
     host: AnyHttpUrl = 'http://localhost:端口号'
     verifyKey: str = ''
 
 
 class AdminConfig(RConfig):
-    masterId: int = 114514  # 机器人主人的QQ号
+    __filename__: str = 'kaltsit_config'
+
+    masterId: int = 114514  # 机器人主人的QQ号 必填
     masterName: str = '1919810'
     admins: list = [114514]
 
 
 class BasicConfig(RConfig):
-    __filename__: str = 'Filename'
+    __filename__: str = 'kaltsit_config'
 
     botName: str = 'botName'
     logChat: bool = False
@@ -93,3 +97,5 @@ class ModulesConfig(RConfig):
 
 basic_cfg = BasicConfig()
 modules_cfg = ModulesConfig()
+
+print(BasicConfig().databaseUrl)

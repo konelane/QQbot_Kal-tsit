@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # coding:utf-8
 import random
+import re
 from os.path import basename
 
 from core.decos import check_group, check_member, DisableModule, check_permitGroup
@@ -368,7 +369,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'#praise')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'\#praise').flags(re.X)])],
         decorators=[check_group(blockList.blockGroup), check_member(blockList.blockID), check_permitGroup(blockList.permitGroup), DisableModule.require(module_name)],
     )
 )
@@ -385,7 +386,7 @@ async def Praise(
     
     
 
-    await app.sendGroupMessage(group, MessageChain.create(
+    await app.send_group_message(group, MessageChain(
         Plain(outtext)
     ))
 

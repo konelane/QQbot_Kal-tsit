@@ -8,7 +8,7 @@ from os.path import basename
 from random import uniform
 
 # from graia.ariadne import 
-from graia.ariadne.app import Ariadne, OperationMixin
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
 from graia.ariadne.event.message import FriendMessage, GroupMessage
 from graia.ariadne.event.mirai import (
@@ -24,8 +24,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.message.parser.twilight import (
     RegexMatch,
-#     RegexResult,
-#     SpacePolicy,
+    #     RegexResult,
+    #     SpacePolicy,
     Twilight,
 )
 from graia.ariadne.model import Friend, Group
@@ -49,7 +49,7 @@ module_name = basename(__file__)[:-3]
 Module(
     name='BotManager',
     file_name=module_name,
-    author=['name'],
+    author=['KOneLane'],
     usage='[.!！]添加群白名单 [群号]\n[.!！]添加群黑名单 [群号]\n[.!！]添加用户黑名单 [QQ号]\n',
     can_disable=False,
 ).register()
@@ -57,10 +57,10 @@ Module(
 
 
 async def send_to_admin(message: MessageChain):
-    app = Ariadne.get_running(Ariadne)
+    app = Ariadne.current()# get_running(Ariadne)
     for admin in basic_cfg.admin.admins:
         try:
-            await app.sendFriendMessage(admin, message)
+            await app.send_friend_message(admin, message)
             await asyncio.sleep(uniform(0.5, 1.5))
         except UnknownTarget:
             pass
@@ -68,7 +68,7 @@ async def send_to_admin(message: MessageChain):
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[DisableModule.require(module_name)]))
 async def launched(app: Ariadne):
-    groupList = await app.getGroupList()
+    groupList = await app.get_group_list()
     quit_groups = 0
     # for group in groupList:
     #     if group.id not in perm_cfg.group_whitelist:
@@ -78,9 +78,9 @@ async def launched(app: Ariadne):
     # if quit_groups > 0:
     #     msg += f'，本次已自动退出 {quit_groups} 个群'
     try:
-        await app.sendFriendMessage(
+        await app.send_friend_message(
             basic_cfg.admin.masterId,
-            MessageChain.create(
+            MessageChain(
                 Plain(msg),
             ),
         )
@@ -91,9 +91,9 @@ async def launched(app: Ariadne):
 @channel.use(ListenerSchema(listening_events=[ApplicationShutdowned], decorators=[DisableModule.require(module_name)]))
 async def shutdowned(app: Ariadne):
     try:
-        await app.sendFriendMessage(
+        await app.send_friend_message(
             basic_cfg.admin.masterId,
-            MessageChain.create(
+            MessageChain(
                 Plain(f'{basic_cfg.botName} 正在关闭'),
             ),
         )
@@ -108,22 +108,22 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
     """
     if event.supplicant in basic_cfg.admin.admins:
         await event.accept()
-        await app.sendFriendMessage(
+        await app.send_friend_message(
             event.supplicant,
-            MessageChain.create(
+            MessageChain(
                 Plain('已通过你的好友申请'),
             ),
         )
         return
 
-    sourceGroup: None = event.sourceGroup
+    sourceGroup: None = event.source_group
     groupname = '未知'
     if sourceGroup:
-        group = await app.getGroup(sourceGroup)
+        group = await app.get_group(sourceGroup)
         groupname = group.name if group else '未知'
 
     await send_to_admin(
-        MessageChain.create(
+        MessageChain(
             Plain(f'收到添加好友事件\nQQ：{event.supplicant}\n昵称：{event.nickname}\n'),
             Plain(f'来自群：{groupname}({sourceGroup})\n') if sourceGroup else Plain('\n来自好友搜索\n'),
             Plain(event.message) if event.message else Plain('无附加信息'),
@@ -134,32 +134,32 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
     @Waiter.create_using_function([FriendMessage])
     async def waiter(waiter_friend: Friend, waiter_message: MessageChain):
         if waiter_friend.id in basic_cfg.admin.admins:
-            saying = waiter_message.asDisplay()
+            saying = waiter_message.display
             if saying == '同意':
                 return True, waiter_friend.id
             elif saying == '拒绝':
                 return False, waiter_friend.id
             else:
-                await app.sendFriendMessage(
+                await app.send_friend_message(
                     waiter_friend,
-                    MessageChain.create([Plain('请发送同意或拒绝')]),
+                    MessageChain([Plain('请发送同意或拒绝')]),
                 )
 
     try:
         result, admin = await inc.wait(waiter, timeout=600)
     except asyncio.exceptions.TimeoutError:
         await event.reject()
-        await send_to_admin(MessageChain.create(Plain(f'由于超时未审核，已自动拒绝 {event.nickname}({event.supplicant}) 的好友请求')))
+        await send_to_admin(MessageChain(Plain(f'由于超时未审核，已自动拒绝 {event.nickname}({event.supplicant}) 的好友请求')))
     else:
         if result:
             await event.accept()
             await send_to_admin(
-                MessageChain.create(Plain(f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) 的好友请求')),
+                MessageChain(Plain(f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) 的好友请求')),
             )
         else:
             await event.reject('Bot 管理员拒绝了你的好友请求')
             await send_to_admin(
-                MessageChain.create(Plain(f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) 的好友请求')),
+                MessageChain(Plain(f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) 的好友请求')),
             )
 
 
@@ -170,15 +170,15 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
     """
     被邀请入群
     """
-    if event.groupId in perm_cfg.group_whitelist:
+    if event.source_group in perm_cfg.group_whitelist:
         await event.accept()
         await send_to_admin(
-            MessageChain.create(
+            MessageChain(
                 Plain(
                     '收到邀请入群事件\n'
                     f'邀请者：{event.nickname}({event.supplicant})\n'
-                    f'群号：{event.groupId}\n'
-                    f'群名：{event.groupName}\n'
+                    f'群号：{event.source_group}\n'
+                    f'群名：{event.group_name}\n'
                     '\n该群位于白名单中，已同意加入'
                 ),
             ),
@@ -186,12 +186,12 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         return
 
     await send_to_admin(
-        MessageChain.create(
+        MessageChain(
             Plain(
                 '收到邀请入群事件\n'
                 f'邀请者：{event.nickname}({event.supplicant})\n'
-                f'群号：{event.groupId}\n'
-                f'群名：{event.groupName}\n'
+                f'群号：{event.source_group}\n'
+                f'群名：{event.group_name}\n'
                 '\n是否同意申请？请在10分钟内发送“同意”或“拒绝”，否则自动拒绝'
             ),
         ),
@@ -200,15 +200,15 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
     @Waiter.create_using_function([FriendMessage])
     async def waiter(waiter_friend: Friend, waiter_message: MessageChain):
         if waiter_friend.id in basic_cfg.admin.admins:
-            saying = waiter_message.asDisplay()
+            saying = waiter_message.display
             if saying == '同意':
                 return True, waiter_friend.id
             elif saying == '拒绝':
                 return False, waiter_friend.id
             else:
-                await app.sendFriendMessage(
+                await app.send_friend_message(
                     waiter_friend,
-                    MessageChain.create([Plain('请发送同意或拒绝')]),
+                    MessageChain([Plain('请发送同意或拒绝')]),
                 )
 
     try:
@@ -216,31 +216,31 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
     except asyncio.exceptions.TimeoutError:
         await event.reject('由于 Bot 管理员长时间未审核，已自动拒绝')
         await send_to_admin(
-            MessageChain.create(
+            MessageChain(
                 Plain(
-                    f'由于长时间未审核，已自动拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.groupId}) 请求'
+                    f'由于长时间未审核，已自动拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.group_name}({event.source_group}) 请求'
                 )
             ),
         )
     else:
         if result:
             await event.accept()
-            if event.groupId:
-                perm_cfg.group_whitelist.append(event.groupId)
+            if event.source_group:
+                perm_cfg.group_whitelist.append(event.source_group)
                 perm_cfg.save()
             await send_to_admin(
-                MessageChain.create(
+                MessageChain(
                     Plain(
-                        f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.groupId}) 请求'
+                        f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) 邀请进入群 {event.group_name}({event.source_group}) 请求'
                     )
                 ),
             )
         else:
             await event.reject('Bot 管理员拒绝加入该群')
             await send_to_admin(
-                MessageChain.create(
+                MessageChain(
                     Plain(
-                        f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.groupId}) 请求'
+                        f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.group_name}({event.source_group}) 请求'
                     )
                 ),
             )
@@ -251,26 +251,26 @@ async def join_group(app: Ariadne, event: BotJoinGroupEvent):
     """
     收到入群事件
     """
-    member_num = len(await app.getMemberList(event.group))
+    member_num = len(await app.get_member_list(event.group))
     await send_to_admin(
-        MessageChain.create(
+        MessageChain(
             Plain(f'收到 Bot 入群事件\n群号：{event.group.id}\n群名：{event.group.name}\n群人数：{member_num}'),
         ),
     )
 
     # if event.group.id not in perm_cfg.group_whitelist:
-    #     await app.sendGroupMessage(
+    #     await app.send_group_message(
     #         event.group,
-    #         MessageChain.create(f'该群未在白名单中，将不会启用本 Bot 的绝大部分功能，如有需要请先添加群聊607148401'),
+    #         MessageChain(f'该群未在白名单中，将不会启用本 Bot 的绝大部分功能，如有需要请先添加群聊607148401'),
     #     )
     #     # return await app.quitGroup(joingroup.group.id)
     # else:
-    await app.sendGroupMessage(
+    await app.send_group_message(
         event.group,
-        MessageChain.create(
+        MessageChain(
             # f'我是 {basic_cfg.admin.masterName} 的机器人 {basic_cfg.botName}\n'
             # f'如果有需要可以联系主人QQ『{basic_cfg.admin.masterId}』\n'
-            '拉进其他群前请先添加群聊xxx并说明用途，主人添加白名单后即可邀请\n'
+            '拉进其他群前请先添加群聊607148401并说明用途，主人添加白名单后即可邀请\n'
             '发送 #help 可以查看功能列表，请先阅读。\n管理员发送 #bot退群 可以使bot自动退群。'
         ),
     )
@@ -285,7 +285,7 @@ async def kick_group(event: BotLeaveEventKick):
     perm_cfg.save()
 
     await send_to_admin(
-        MessageChain.create(f'收到被踢出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
+        MessageChain(f'收到被踢出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
     )
 
 
@@ -298,7 +298,7 @@ async def leave_group(event: BotLeaveEventActive):
     perm_cfg.save()
 
     await send_to_admin(
-        MessageChain.create(f'收到主动退出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
+        MessageChain(f'收到主动退出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
     )
 
 
@@ -310,7 +310,7 @@ async def leave_group(event: BotLeaveEventActive):
 #     群内权限变动
 #     """
 #     await send_to_admin(
-#         MessageChain.create(f'收到权限变动事件\n群号：{event.group.id}\n群名：{event.group.name}\n权限变更为：{event.current}'),
+#         MessageChain(f'收到权限变动事件\n群号：{event.group.id}\n群名：{event.group.name}\n权限变更为：{event.current}'),
 #     )
 
 
@@ -334,7 +334,7 @@ async def leave_group(event: BotLeaveEventActive):
 
 #     await app.sendFriendMessage(
 #         friend,
-#         MessageChain.create(
+#         MessageChain(
 #             Plain(f'已添加群 {group.result.asDisplay()} 至白名单'),
 #         ),
 #     )
@@ -360,7 +360,7 @@ async def leave_group(event: BotLeaveEventActive):
 
 #     await app.sendFriendMessage(
 #         friend,
-#         MessageChain.create(
+#         MessageChain(
 #             Plain(f'已添加用户 {qq.result.asDisplay()} 至黑名单'),
 #         ),
 #     )

@@ -1,0 +1,40 @@
+{
+
+  "PowerPlant_first_search_0":{
+    "node_id":"PowerPlant_first_search_0",
+    "node_info":{
+      "作者":"KOneLane",
+      "剧情":"前往训练室，路遇雪雉和小刻",
+      "其他介绍":""
+    },
+    "choice_made":[],
+    "node_type":"choice",
+    "story_text_file_name":"PowerPlant-line1",
+    "choice_maker":-1,
+    "position_save":0,
+    "node_amount":3,
+    "is_done":0,
+    "game_time_pass":"",
+    "dice_position_list":[],
+    "dice_position":{
+    },
+    "dice_result":{},
+    "choice_position_list":[1],
+    "choice_position":{
+      "1":{
+        "0":["PowerPlant_first_search_0_card_line0","node_name","","选择0 不交出饭卡/无法交出饭卡 - 暂时返回办公室。"],
+        "1":["PowerPlant_first_search_0_card_line1","node_name","","选择1 将饭卡给雪雉。"],
+        "2":["PowerPlant_first_search_0_card_line2","node_name","","选择2 无视她们。"]
+      }
+    },
+    "choice_result":-1,
+    "next_node_id":"",
+    "rqmt_node_list":[],
+    "rqmt_node_dict":{
+    },
+    "rqmt_got_list":[0, 0, 0],
+    "reward_list":[],
+    "reward":{
+    }
+  }
+}
