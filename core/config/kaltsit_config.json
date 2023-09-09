@@ -13,5 +13,6 @@
     ]
   },
   "host": "http://localhost:8082",
-  "verifyKey": "mah配置的key"
+  "verifyKey": "mah配置的key",
+  "GAODE_KEY": "高德地图API key"
 }

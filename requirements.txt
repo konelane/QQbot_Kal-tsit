@@ -12,3 +12,4 @@ xpinyin
 openai
 tiktoken
 httpx
+orjson

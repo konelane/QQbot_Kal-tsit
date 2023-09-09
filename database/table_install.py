@@ -14,14 +14,14 @@ class DataTableInstall:
         """连接数据库"""
         con = sqlite3.connect(self.filename + 'Kal-tsit.db')
         cur = con.cursor()
-        return (con,cur)
+        return con,cur
 
     def gachaTableCreate(self):
-        '''resource: gacha
+        """resource: gacha
         十连数据表： gachaData
         表头 - 用户昵称 | qq | 抽卡次数 | 六星 | 六星率 | 五星 | 五星率 | 四星 | 四星率 | 三星 | 三星率 | 最后抽卡时间 |
         表头 - u_name  | id | gacha_num| six | six_r  | five| five_r | four | four_r | three| three_r | last_gacha_time |
-        '''
+        """
         con,cur = self.__connectSqlite()
         cur.execute("CREATE TABLE IF NOT EXISTS `gachaData` (  \
                 id INTEGER PRIMARY KEY NOT NULL,  u_name TEXT, gacha_num INTEGER, \
@@ -79,6 +79,23 @@ class DataTableInstall:
         con.close()
         print('建表成功')
 
+    def signInDatabaseInit(self):
+        """签到建表"""
+        con, cur = self.__connectSqlite()
+        cur.execute("CREATE TABLE IF NOT EXISTS `signin` (  \
+                id INTEGER PRIMARY KEY NOT NULL, signin_uid TEXT, name TEXT, \
+                exp INTEGER, total_days INTEGER, consecutive_days INTEGER, is_signin_consecutively INTEGER, \
+                reliance INTEGER, credit INTEGER, last_signin_time TEXT \
+            )")
+        cur.execute(f"REPLACE INTO `signin` ( id, signin_uid, name, exp, total_days, consecutive_days, \
+            is_signin_consecutively, reliance, credit, last_signin_time ) VALUES(?,?,?,?,?,?,?,?,?,?)", (
+            591016144, str(uuid4()), '凯尔希初始化', 200, 365, 10,
+            1, 120, 2000, time.strftime("%Y/%m/%d-%H:%M:%S", time.localtime())
+        )
+                    )
+        con.commit()
+        con.close()
+        print('建表成功')
 
 
 if __name__ =='__main__':
@@ -89,6 +106,7 @@ if __name__ =='__main__':
         'text_ori':'#抽卡',
     }
     table_create_obj = DataTableInstall()
+    table_create_obj.signInDatabaseInit()
     table_create_obj.gachaTableCreate()
     table_create_obj.kheartTableCreate()
     table_create_obj.kaltsitRogueTableCreate()

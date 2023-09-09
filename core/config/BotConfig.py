@@ -73,6 +73,7 @@ class AdminConfig(RConfig):
     masterId: int = 114514  # 机器人主人的QQ号 必填
     masterName: str = '1919810'
     admins: list = [114514]
+    GAODE_KEY = '高德地图Key'
 
 
 class BasicConfig(RConfig):

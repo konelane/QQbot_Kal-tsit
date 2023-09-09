@@ -1,15 +1,15 @@
 #! /usr/bin/env python3
 # coding:utf-8
-'''
+"""
 Author: KOneLane
 Date: 2022-02-26 10:40:40
 LastEditors: KOneLane
 LastEditTime: 2022-03-18 10:37:16
-Description: 
+Description:
     rebuild from github: https://github.com/Redlnn/signin-image-generator
     edit by KOneLane (AGPL-3.0)
 version: V
-'''
+"""
 import asyncio
 import os
 import random
@@ -80,7 +80,7 @@ class SigninClass:
         """连接数据库"""
         con = sqlite3.connect(self.filename + 'Kal-tsit.db')
         cur = con.cursor()
-        return (con, cur)
+        return con, cur
 
     def databaseInit(self):
         """建表"""

@@ -168,7 +168,7 @@ guessTable = [
 
 
 class blockList:
-    '''用于控制信息，不实例化'''
+    """用于控制信息，不实例化"""
     # 不触发功能的qq账号
     blockID = [
         
